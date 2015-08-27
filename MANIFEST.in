@@ -1,0 +1,1 @@
+recursive-include markdown_to_pdf *.tex

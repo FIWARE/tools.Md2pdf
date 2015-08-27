@@ -1,0 +1,3 @@
+[console_scripts]
+markdown_to_pdf = markdown_to_pdf.markdown_to_pdf:main
+
