@@ -62,7 +62,7 @@ def parse_image_links( markdown_content, prefix ):
 
 def parse_markdown_links( markdown_content, markdown_filepath ):
     """Parse all the Markdown links in the given Markdown content"""
-    regex_str = "\[(.+)\]\((.+)(#.*)?\)"
+    regex_str = "\[([^\[\]]+)\]\(([^\(\)]+)\)"
     reference_regex = re.compile( regex_str )
 
     references_to_change = reference_regex.findall( markdown_content )
@@ -70,18 +70,19 @@ def parse_markdown_links( markdown_content, markdown_filepath ):
     if references_to_change:
         for reference in references_to_change:
             link_text = reference[0]
-            page      = reference[1]
-            section   =  reference[2]
+            link      = reference[1]
 
             # Ignore links to external URLS
-            if not is_an_url( page ):
-                original_ref = "[%s](%s%s)" % ( link_text, page, section)
-                if page[0] != '#':
-                    new_page = "#" + generate_pandoc_section_slug( os.path.join( os.path.dirname( markdown_filepath ), page ) ).replace( '#', '__' )
+            if not is_an_url( link ):
+                original_ref = "[%s](%s)" % (link_text, link)
+                    
+                if link[0] != '#':
+                    new_link = "#" + generate_pandoc_section_slug( os.path.join( os.path.dirname( markdown_filepath ), link ) ).replace( '#', '__' )
                 else:
-                    new_page = "#" + generate_pandoc_section_slug( markdown_filepath + page ).replace( '#', '__' )
+                    new_link = "#" + generate_pandoc_section_slug( markdown_filepath + link ).replace( '#', '__' )
 
-                new_ref = "[%s](%s%s)" % ( link_text, new_page, section)
+                
+                new_ref = "[%s](%s)" % ( link_text, new_link)
 
                 markdown_content = markdown_content.replace( original_ref, new_ref )
 

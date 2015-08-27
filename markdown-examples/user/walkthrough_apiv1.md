@@ -1431,7 +1431,7 @@ is independent of that fields, as shown below:
 
 Apart from simple values (i.e. strings) for attribute values, you can
 also use complex structures or custom metadata. These are advance
-topics, described in [this section](Structured_attribute_valued.md#structured-attribute-values) and [this other](metadata.md#custom-attribute-metadata "), respectively.
+topics, described in [this section](Structured_attribute_valued.md#structured-attribute-values) and [this other](metadata.md#custom-attribute-metadata), respectively.
 
 [Top](#top)
 
@@ -1937,7 +1937,7 @@ differences:
 
 Apart from simple values (i.e. strings) for attribute values, you can
 also use complex structures or custom metadata. These are advance
-topics, described in [this section](structured_attribute_valued.md#structured-attribute-values ) and [this other](metadata.md#custom-attribute-metadata ), respectively.
+topics, described in [this section](structured_attribute_valued.md#structured-values-for-attributes) and [this other](metadata.md#custom-attribute-metadata ), respectively.
 
 [Top](#top)
 
