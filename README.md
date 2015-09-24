@@ -41,7 +41,7 @@ For generating a PDF from the documentation example, execute:
 markdown_to_pdf /var/tmp/orion-user-manual.pdf markdown-examples/user/markdown-to-pdf.yml
 ```
 
-For runing unit tests ([unittest](https://docs.python.org/2/library/unittest.html) required), execute (**from within the repository root directory**:
+For runing unit tests ([unittest](https://docs.python.org/2/library/unittest.html) required), execute (**from within the repository root directory**):
 
 ```
 python2 markdown_to_pdf/test_markdown_to_pdf.py

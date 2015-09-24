@@ -23,7 +23,8 @@ setup(name='markdown_to_pdf',
       packages=setuptools.find_packages(),
       include_package_data=True,
       install_requires=[
-        'pyyaml>=3.11'
+        'pyyaml>=3.11',
+        'markdown>=2.6.2',
       ],
       entry_points={
         'console_scripts': [
