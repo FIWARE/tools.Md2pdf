@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 
-import sys
 import yaml
-from subprocess import call
-from markdown.extensions.toc import slugify
+from subprocess import call, Popen
 import os
 import re
+import shutil
+import pypandoc
+import string
+
+
+from convert_md_tables import *
+from links_processing import *
 
 
 def get_markdown_filepaths(configuration_filepath):
@@ -13,7 +18,7 @@ def get_markdown_filepaths(configuration_filepath):
     markdown_filepaths = []
     configuration_dirpath = os.path.dirname(configuration_filepath)
     
-    with open(configuration_filepath, 'r') as configuration_file:
+    with open(configuration_filepath, 'rU') as configuration_file:
          configuration_file_content = yaml.load(configuration_file)
 
     if len(configuration_dirpath) > 0:
@@ -27,167 +32,100 @@ def get_markdown_filepaths(configuration_filepath):
 def build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepaths):
     with open(monolitic_markdown_filepath, 'w') as monolitic_markdown_file:
         for markdown_filepath in markdown_filepaths:
-            with open(markdown_filepath, 'r') as markdown_file:
-                markdown_content = markdown_file.read()
-
-                markdown_content = parse_markdown_links(markdown_content, markdown_filepath)
-                markdown_content = parse_image_links(markdown_content, markdown_filepath)
-
-                markdown_content = generate_pandoc_header_ids(markdown_content, markdown_filepath)
-
-                markdown_content = prevent_latex_images_floating(markdown_content)
-
-                markdown_content = process_header_html_anchors(markdown_content, markdown_filepath)
-
-                file_latex_label = "\phantomsection\n\\label{%s}" % slugify_string(markdown_filepath)
-                monolitic_markdown_file.write("\n\n" + file_latex_label + "\n\n" + markdown_content + "\n")
+            temp_file = '/var/tmp/temp_md_m2pdf.md'
+            
+            with open(markdown_filepath, 'rU') as markdown_file:
+                markdown_content = markdown_file.read().decode('utf-8')
 
 
-def parse_image_links(markdown_content, markdown_filepath):
-    """Add a prefix to all the image links in the given Markdown content"""
-    regex_str = r'!\[(.*)\]\((.*)\)'
-    reference_regex = re.compile(regex_str)
+                markdown_content = fix_html_before_title(markdown_content)
+                markdown_content = fix_img_in_new_line(markdown_content)
+                markdown_content = fix_new_line_after_img(markdown_content)
 
-    references_to_change = reference_regex.findall(markdown_content)
+                markdown_content = pypandoc.convert(markdown_content, 'markdown_github', format='md')
 
-    markdown_absolute_filepath = os.path.join(os.getcwd(), os.path.dirname(markdown_filepath))
+                markdown_content = parse_non_code_content(
+                    markdown_content, 
+                    lambda content : process_non_code_content(content, markdown_filepath )
+                )
 
-    if references_to_change:
-        for reference in references_to_change:
-            link_text = reference[0]
-            link      = reference[1]
+                markdown_content = translate_md_tables(markdown_content)
 
-            if not is_an_url(link):
-                original_reference = r'!\[(.*)\]\((.*)\)'
+                file_latex_label = generate_latex_anchor(slugify_string(markdown_filepath))
 
-                new_link = os.path.join(markdown_absolute_filepath, link)
-                new_reference = "![%s](%s)" % (link_text, new_link)
-
-                markdown_content = re.sub(original_reference, new_reference, markdown_content)
-
-    return markdown_content
+                monolitic_markdown_file.write( ("\n\n\\newpage" + file_latex_label + "\n\n" + markdown_content + "\n").encode('UTF-8'))
 
 
-def parse_markdown_links(markdown_content, markdown_filepath):
-    """Parse all the Markdown links in the given Markdown content"""
-    regex_str = "\[([^\[\]]+)\]\(([^\(\)]+)\)"
-    reference_regex = re.compile(regex_str)
-
-    references_to_change = reference_regex.findall(markdown_content)
-
-    if references_to_change:
-        for reference in references_to_change:
-            link_text = reference[0]
-            link      = reference[1]
-
-            # Ignore links to external URLS
-            if not is_an_url(link):
-                original_ref = "[%s](%s)" % (link_text, link)
-                    
-                if link[0] != '#':
-                    new_link = "#" + slugify_string(os.path.normpath(os.path.join(os.path.dirname(markdown_filepath), link)))
-                else:
-                    new_link = "#" + slugify_string(markdown_filepath + link)
-                
-                new_ref = "[%s](%s)" % (link_text, new_link)
-
-                markdown_content = markdown_content.replace(original_ref, new_ref)
-
-    return markdown_content
-
-
-def get_markdown_header_level(markdown_line):
-    """Return the nesting level of the Markdown header in markdown_line (if any)"""
-    i = 0
-    while(i <len( markdown_line) and markdown_line[i] == '#'):
-        i += 1
-    return i
-
-
-def is_an_url(link):
-    """Returns true if the given string is a URL"""
-    if( link.startswith("http://") 
-        or link.startswith("https://")
-        or link.startswith("http://")
-        or link.startswith("www.") ):
-        return True
-    else:
-        return False
-
-
-def generate_pandoc_header_id(filepath, markdown_header):
-    """Generate a Pandoc ID for a given Markdown header
-
-    Arguments:
-    filepath - Path of the file containing the header.
-    markdown_header - Markdown header
-    """
-    return "{#" + generate_pandoc_header_slug(filepath, markdown_header) + "}"
-
-
-def generate_pandoc_header_slug(filepath, markdown_header):
-    """Generate a Pandoc slug for a given Markdown header
-
-    Arguments:
-    filepath - Path of the file containing the header.
-    markdown_header - Markdown header
-    """
-    slug_filepath = slugify_string(filepath)
-    slug_markdown_header =  slugify_string(markdown_header.strip().lstrip('#').strip())
+def process_non_code_content(markdown_content, markdown_filepath):
+    """Process the given non code Markdown content
     
-    return slug_filepath + slug_markdown_header
-
-
-def make_header_id_unique(header_id, used_ids):
-    """Make the given ID unique given a dictionary of used_ids
-
     Arguments:
-    header_id - Slugified header ID
-    used_id - Dictionary associating each header ID without suffixes to 
-    the number of times that such ID has been used.
+    markdown_content = Markdown content without code parts
+    markdown_filepath = Path to Markdown file containing previous content
     """
-    if header_id in used_ids:
-        unique_header_id = header_id + '-' + str(used_ids[header_id])
-        used_ids[header_id] += 1
-    else:
-        unique_header_id = header_id
-        used_ids[header_id] = 1
+    markdown_content = parse_image_links(markdown_content, markdown_filepath)
+    markdown_content = remove_broken_images(markdown_content)
 
-    return unique_header_id
+    markdown_content = convert_referenced_links_to_inline(markdown_content)
 
-def slugify_string(string):
-    """slugify_string the given string"""
-    return slugify(unicode(string), '-').encode('utf-8', 'ignore').replace('_', '-')
+    markdown_content = parse_markdown_inline_links(markdown_content, markdown_filepath)
+
+    markdown_content = generate_pandoc_header_ids(markdown_content, markdown_filepath)
+
+    markdown_content = prevent_latex_images_floating(markdown_content)
+
+    markdown_content = process_html_anchors( markdown_content, markdown_filepath )
+   
+    markdown_content = prevent_latex_images_floating(markdown_content)
+
+    markdown_content = add_newlines_before_markdown_headers( markdown_content )
+
+    return markdown_content
 
 
-def generate_pandoc_section_id(filepath):
-    """Generate a Pandoc ID for the given filepath"""
-    return "{#" + slugify_string(filepath) + "}"
+def fix_html_before_title(markdown_content):
+
+    markdown_content = markdown_content.replace('>\n#','>\n\n#')
+    return markdown_content
+
+def fix_img_in_new_line(markdown_content):
+    markdown_content = markdown_content.replace('\n![', '\n\n![')
+    markdown_content = markdown_content.replace( '\n\n\n![','\n\n![')
+    return markdown_content
+
+def fix_new_line_after_img(markdown_content):
+    markdown_content =  re.sub(r'(?P<img>!\[[^\[\]]*\]\([^\(\)]*\)\n)',r'\g<img>\n', markdown_content)
+    
+    markdown_content =  re.sub('(?P<img>!\[[^\[\]]*\]\([^\(\)]*\)\n\n)\n','\g<img>', markdown_content)
+
+    return markdown_content
 
 
-def generate_pandoc_header_ids(markdown_content, markdown_filepath):
-    """Append a Pandoc ID (for section linking) to every header in the given Markdown content)
 
-    Arguments:
-    markdown_content = Markdown content string
-    markdown_filepath = Path to the Markdown content file. This is used as a prefix for the IDs.
-    """
+def add_newlines_before_markdown_headers(markdown_content):
     markdown_lines = markdown_content.split('\n')
     markdown_output_content = ""
     inside_a_code_block = False
     used_ids = {}
+    line_index = 0
 
     for markdown_line in markdown_lines:
-        header_level = get_markdown_header_level(markdown_line)
-        markdown_output_content += markdown_line
-
+      
         if markdown_line.lstrip().startswith('```'):
             inside_a_code_block = not inside_a_code_block
 
-        if(not inside_a_code_block and header_level > 0):
-            markdown_output_content += " {#" + make_header_id_unique(generate_pandoc_header_slug(markdown_filepath, markdown_line), used_ids) + "}"
+        if not inside_a_code_block:
+            if (line_index + 1) < len(markdown_lines):
+                next_markdown_line = markdown_lines[line_index+1]
+            else:
+                next_markdown_line = ''
 
+            if is_a_markdown_header(markdown_line,next_markdown_line):
+                markdown_output_content += "\n\n"
+
+        markdown_output_content += markdown_line
         markdown_output_content += "\n"
+        line_index += 1
 
     return markdown_output_content
 
@@ -216,60 +154,96 @@ def generate_pdf_from_markdown(pdf_filepath, markdown_filepath):
     Arguments:
     pdf_filepath - filepath of the output PDF file
     markdown_filepath - filepath of the Markdown input file"""
+    dir_name = os.path.dirname(pdf_filepath)
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    
     latex_config_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'latex-configuration')
     latex_code_sections_config_path = os.path.join(latex_config_dir, 'code-sections.tex')
 
-    call(["pandoc", "--latex-engine=xelatex", "--toc-depth=3", "--listings", "-H", latex_code_sections_config_path, "--toc", "--from", "markdown", "--output", pdf_filepath, markdown_filepath])
+    call(["pandoc","--latex-engine=xelatex", "--toc-depth=3", "--listings", "-H", latex_code_sections_config_path, "--toc", "--from", "markdown", "--output", pdf_filepath, markdown_filepath])
 
 
-def process_header_html_anchors(markdown_content, markdown_filepath):
-    """Process header anchors so links to them are fixed on the PDF
+def generate_md_cover(configuration_file_path, temp_cover_path):
+    """Generate a MD cover using cover_metadata"""
 
-    Find Markdown headers with HTML anchors (ie. 
-    "#<a name="anchor_id"></a> Header") and replace them with LaTeX 
-    labels so links to such anchors are rendered correctly on the 
-    resulting PDF
+    with open(configuration_file_path, 'rU') as configuration_file:
+        configuration_file_content = yaml.load(configuration_file)
 
-    Arguments:
-    markdown_content - MD content the substitutions will be applied on
-    markdown_filepath - Path to the MD file containing previous content.
-    """
-    anchor_id_prefix = slugify_string(markdown_filepath)
+    cover_template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cover_template')
+    cover_template_path = os.path.join(cover_template_dir, 'cover_template.md')
 
-    regex_str = r'(#+.*)<a name="([^\"]+)"><\/a>(.*)'
-    reference_regex = re.compile(regex_str)
+    try:
+        cover_metadata = configuration_file_content['cover_metadata']
+    except:
+        print("Metadata for cover not provided")
+        return False
 
-    references_to_change = reference_regex.findall(markdown_content)
+    with open (cover_template_path, "rU") as myfile:
+        data=myfile.read()
     
-    if references_to_change:
-        for reference in references_to_change:
-            previous_content = reference[0]
-            link = reference[1]
-            next_content = reference[2]
+    try:
+        data = data.replace('<title>', cover_metadata['title'] )
+    except Exception as e:
+        print("Metadata title not found")
+        data = data.replace('<title>', '')
 
-            original_ref = "%s<a name=\"%s\"></a>%s" % (previous_content, link, next_content)
+    for key, value in cover_metadata.iteritems():
+        if key != 'title':
+            data =  data + "\n**"+ key + "**: " + value + "   "
 
-            new_link = anchor_id_prefix + slugify_string(link)
-            new_ref = "%s%s\n\n\\phantomsection\n\\label{%s}\n" % (previous_content, next_content, new_link)
 
-            markdown_content = markdown_content.replace(original_ref, new_ref)
+    with open(temp_cover_path, "w") as text_file:
+        text_file.write(data)
 
-    return markdown_content
+    return True
 
+def convert_from_GFM(original_md, converted_md):
+     call(["pandoc", "--from", "markdown_github", "--to", "markdown", "--output", converted_md, original_md])
+
+def render_pdf_cover(input_md_path, output_pdf_path):
+    """ convert a MD cover to a PDF """
+
+    call(["pandoc", "--from", "markdown", "--output", output_pdf_path, input_md_path], cwd="/var/tmp/")
+
+
+def merge_cover_with_content(pdf_files_list, output_pdf):
+    """ merge two pdf files"""
+    call(["pdftk", pdf_files_list[0], pdf_files_list[1], "output", output_pdf])
 
 def main():
     if len(sys.argv) != 3:
-        print "ERROR: This script expects 2 arguments"
-        print "Usage: \n\t" + sys.argv[0] + " <output-pdf-file> <input-conf-file>"
+        print("ERROR: This script expects 2 arguments")
+        print("Usage: \n\t" + sys.argv[0] + " <output-pdf-file> <input-conf-file>")
         sys.exit(-1)
 
     monolitic_markdown_filepath = "/var/tmp/markdown-to-pdf-temp.md"
+    temp_cover_md_path = "/var/tmp/markdown-to-pdf-cover-temp.md"
+    temp_pdf_path = "/var/tmp/markdown-to-pdf-content-temp.pdf"
+    temp_cover_pdf_path = "/var/tmp/markdown-to-pdf-cover-temp.pdf"
+    cover_template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cover_template')
+
+
+    shutil.copy2(os.path.join(cover_template_dir, 'cover_img.png'), "/var/tmp/cover_img.png")
+
+    shutil.copy2(os.path.join(cover_template_dir, 'fiware_logo.png'), "/var/tmp/fiware_logo.png")
+    
     input_conf_file = sys.argv[2]
     output_pdf_file = sys.argv[1]
 
     markdown_filepaths = get_markdown_filepaths(input_conf_file)
     build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepaths)
-    generate_pdf_from_markdown(output_pdf_file, monolitic_markdown_filepath)
+
+
+    generate_pdf_from_markdown(temp_pdf_path, monolitic_markdown_filepath)
+
+
+    if generate_md_cover(input_conf_file, temp_cover_md_path):
+        render_pdf_cover(temp_cover_md_path, temp_cover_pdf_path)
+        merge_cover_with_content([temp_cover_pdf_path, temp_pdf_path], output_pdf_file)
+    else:
+        shutil.copy2(temp_pdf_path, output_pdf_file)
+
 
 
 if __name__ == "__main__":

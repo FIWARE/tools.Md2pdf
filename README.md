@@ -19,7 +19,9 @@
 
         sudo apt-get install texlive-xetex texlive-fonts-recommended texlive-latex-extra
 
-4. Run the following commands for cloning this repo and installing the Python package.
+4. Download and install [PDFtk](https://www.pdflabs.com/tools/pdftk-server/)
+
+5. Run the following commands for cloning this repo and installing the Python package.
 
         git clone git@github.com:FiwareULPGC/markdown_to_pdf.git
         cd markdown_to_pdf
@@ -33,7 +35,26 @@
 markdown_to_pdf *ouput_pdf_file* *input_configuration_file*
 ```
 
-where *input_configuration_file* is a YAML configuration file containing a list of paths to the Markdown files that we want to include in the PDF. The paths must be relative to the configuration file itself.
+where *input_configuration_file* is a YAML configuration file containing:
+* A list of paths to the Markdown files that we want to include in the PDF. The paths must be relative to the configuration file itself.
+* Data related to cover.
+
+An example of the configuration file is below:
+
+```
+files_order:
+    - 'first-document.md'
+    - 'second-document.md'
+    - 'third-document.md'
+
+cover_metadata:
+    title: 'Document title'
+    Author: 'foo barr'
+    Another Data: 'data value'
+```
+
+Note that the cover metadata section accepts any key-value pair. The title is the only that it's treated specially, the rest simply are placed using a new line per pair with the key in bold.
+
 
 For generating a PDF from the documentation example, execute:
 

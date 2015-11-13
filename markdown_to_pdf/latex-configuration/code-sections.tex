@@ -1,5 +1,54 @@
 % Contents of listings-setup.tex
 \usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[htt]{hyphenat}
+\usepackage{xstring}
+\usepackage{forloop}
+%\usepackage{url}
+
+
+
+\newsavebox\leftarrowbox
+\sbox\leftarrowbox{$\leftarrow$}
+\makeatletter
+\renewcommand*{\BreakableSlash}{%
+  \leavevmode
+  \prw@zbreak
+  /%
+  \discretionary{\usebox\leftarrowbox}{}{}%
+  \prw@zbreak
+}
+\makeatother
+
+%\mathchardef\UrlBreakPenalty=10000
+%\mathchardef\UrlBigBreakPenalty=10000
+
+\newsavebox\MyBreakChar%
+\sbox\MyBreakChar{}% char to display the break after non char
+\newsavebox\MySpaceBreakChar%
+\sbox\MySpaceBreakChar{\hyp}% char to display the break after space
+\makeatletter%
+\newcommand*{\BreakableChar}[1][\MyBreakChar]{%
+  \leavevmode%
+  \prw@zbreak%
+  \discretionary{\usebox#1}{}{}%
+  \prw@zbreak%
+}%
+\makeatother
+
+
+\newcommand{\tableurl}[1]{%
+  \begingroup
+  \ttfamily
+  \begingroup\lccode`~=`/\lowercase{\endgroup\def~}{/\discretionary{P}{A}{}}%
+  \begingroup\lccode`~=`.\lowercase{\endgroup\def~}{.\discretionary{}{}{}}%
+  \begingroup\lccode`~=`_\lowercase{\endgroup\def~}{_\discretionary{}{}{}}%
+
+  \catcode`/=\active\catcode`.=\active\catcode`_=\active
+  %\catcode`/=\active\catcode`.=\active
+  \scantokens{#1\noexpand}%
+  \endgroup
+}
 
 \lstset{
     basicstyle=\ttfamily,
@@ -21,4 +70,5 @@
     escapeinside={\%*}{*)},
     linewidth=\textwidth,
     basewidth=0.5em,
+    literate={-}{{-\allowbreak}}{1}
 }
