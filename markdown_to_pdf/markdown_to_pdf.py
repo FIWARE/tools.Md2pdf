@@ -7,6 +7,7 @@ import re
 import shutil
 import pypandoc
 import string
+import errno
 
 
 from convert_md_tables import *
@@ -36,19 +37,33 @@ def build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepath
             
             with open(markdown_filepath, 'rU') as markdown_file:
                 markdown_content = markdown_file.read().decode('utf-8')
-
+                
+                markdown_content = fix_blanck_spaces_before_code_tag(markdown_content)
 
                 markdown_content = fix_html_before_title(markdown_content)
                 markdown_content = fix_img_in_new_line(markdown_content)
+                
                 markdown_content = fix_new_line_after_img(markdown_content)
 
                 markdown_content = pypandoc.convert(markdown_content, 'markdown_github', format='md')
 
-                markdown_content = parse_non_code_content(
-                    markdown_content, 
-                    lambda content : process_non_code_content(content, markdown_filepath )
-                )
+                markdown_content = fix_special_characters_inside_links(markdown_content)
+                
+                markdown_content = parse_image_links(markdown_content, markdown_filepath)
+    		markdown_content = remove_broken_images(markdown_content)
 
+    		markdown_content = convert_referenced_links_to_inline(markdown_content)
+
+		markdown_content = parse_markdown_inline_links(markdown_content, markdown_filepath)
+    
+    		markdown_content = generate_pandoc_header_ids(markdown_content, markdown_filepath)
+
+    		markdown_content = process_html_anchors( markdown_content, markdown_filepath )
+   
+    		markdown_content = prevent_latex_images_floating(markdown_content)
+
+    		markdown_content = add_newlines_before_markdown_headers( markdown_content )
+                
                 markdown_content = translate_md_tables(markdown_content)
 
                 file_latex_label = generate_latex_anchor(slugify_string(markdown_filepath))
@@ -56,32 +71,27 @@ def build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepath
                 monolitic_markdown_file.write( ("\n\n\\newpage" + file_latex_label + "\n\n" + markdown_content + "\n").encode('UTF-8'))
 
 
-def process_non_code_content(markdown_content, markdown_filepath):
-    """Process the given non code Markdown content
+def fix_special_characters_inside_links(markdown_content):
+    pattern_url = r'(?P<prev>.*?)(?P<url>https?://[^ \n]*)(?P<last>.*)'
+    pattern = r'([^\\])(?P<character>[<>])'
+
+    if markdown_content is None:
+        return ''
     
-    Arguments:
-    markdown_content = Markdown content without code parts
-    markdown_filepath = Path to Markdown file containing previous content
-    """
-    markdown_content = parse_image_links(markdown_content, markdown_filepath)
-    markdown_content = remove_broken_images(markdown_content)
+    result = re.search(pattern_url,markdown_content,re.IGNORECASE | re.DOTALL)
 
-    markdown_content = convert_referenced_links_to_inline(markdown_content)
+    if result:
+        return (fix_special_characters_inside_links(result.group('prev')) + 
+                re.sub(pattern,'\\1\\'+re.escape('\\2'),result.group('url')) +
+                fix_special_characters_inside_links(result.group('last')) )
 
-    markdown_content = parse_markdown_inline_links(markdown_content, markdown_filepath)
+    else:
+        return markdown_content
 
-    markdown_content = generate_pandoc_header_ids(markdown_content, markdown_filepath)
+def fix_blanck_spaces_before_code_tag(markdown_content):
 
-    markdown_content = prevent_latex_images_floating(markdown_content)
-
-    markdown_content = process_html_anchors( markdown_content, markdown_filepath )
-   
-    markdown_content = prevent_latex_images_floating(markdown_content)
-
-    markdown_content = add_newlines_before_markdown_headers( markdown_content )
-
+    markdown_content = re.sub(r'(\n {1,3}```)', r'\n```', markdown_content)
     return markdown_content
-
 
 def fix_html_before_title(markdown_content):
 
@@ -127,7 +137,7 @@ def add_newlines_before_markdown_headers(markdown_content):
         markdown_output_content += "\n"
         line_index += 1
 
-    return markdown_output_content
+    return markdown_output_content[:-1]
 
 
 def prevent_latex_images_floating(markdown_content):
@@ -231,6 +241,19 @@ def main():
     input_conf_file = sys.argv[2]
     output_pdf_file = sys.argv[1]
 
+    output_dir = os.path.dirname(output_pdf_file)
+    
+    if '' != output_dir:
+        try:
+            os.makedirs(output_dir)
+        except OSError as exception:
+            if exception.errno != errno.EEXIST:
+                raise
+    
+    """
+    if not os.path.exists(os.path.dirname(output_pdf_file)):
+        os.makedirs(os.path.dirname(output_pdf_file))
+    """    
     markdown_filepaths = get_markdown_filepaths(input_conf_file)
     build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepaths)
 

@@ -3,6 +3,12 @@
 import unittest
 from markdown_to_pdf import *
 
+def local_link_callback(link, markdown_filepath):
+    if link[0] == '#':
+        return '#parsed-local-link'
+    else: 
+        return '#parsed-remote-link'
+
 class TestMarkdownToPdf( unittest.TestCase ):
     def test_is_a_markdown_header(self):
         self.assertEqual( is_a_markdown_header( 'No header', '' ), False )
@@ -43,13 +49,13 @@ class TestMarkdownToPdf( unittest.TestCase ):
 
 
     def test_generate_pandoc_header_ids(self):
-        self.assertEqual( generate_pandoc_header_ids('# Header', 'file.md'), '\n\n\\phantomsection\\label{filemdheader}\n# Header\n' )
-        self.assertEqual( generate_pandoc_header_ids('```\n# Header\n```', 'file.md'), '```\n# Header\n```\n' )
-        self.assertEqual( generate_pandoc_header_ids(' ```\n# Header\n```', 'file.md'), ' ```\n# Header\n```\n' )
-        self.assertEqual( generate_pandoc_header_ids('\t```\n# Header\n```', 'file.md'), '\t```\n# Header\n```\n' )
-        self.assertEqual( generate_pandoc_header_ids('`# Header`', 'file.md'), '`# Header`\n' )
-        self.assertEqual( generate_pandoc_header_ids('Header\n==', 'file.md'), '\n\n\\phantomsection\\label{filemdheader}\nHeader\n==\n' )
-        self.assertEqual( generate_pandoc_header_ids('Header\n--', 'file.md'), '\n\n\\phantomsection\\label{filemdheader}\nHeader\n--\n' )
+        self.assertEqual( generate_pandoc_header_ids('# Header', 'file.md'), '\n\n\\phantomsection\\label{filemdheader}\n# Header' )
+        self.assertEqual( generate_pandoc_header_ids('```\n# Header\n```', 'file.md'), '```\n# Header\n```' )
+        self.assertEqual( generate_pandoc_header_ids(' ```\n# Header\n```', 'file.md'), ' ```\n# Header\n```' )
+        self.assertEqual( generate_pandoc_header_ids('\t```\n# Header\n```', 'file.md'), '\t```\n# Header\n```' )
+        self.assertEqual( generate_pandoc_header_ids('`# Header`', 'file.md'), '`# Header`' )
+        self.assertEqual( generate_pandoc_header_ids('Header\n==', 'file.md'), '\n\n\\phantomsection\\label{filemdheader}\nHeader\n==' )
+        self.assertEqual( generate_pandoc_header_ids('Header\n--', 'file.md'), '\n\n\\phantomsection\\label{filemdheader}\nHeader\n--' )
 
 
     def test_make_header_id_unique(self):
@@ -152,6 +158,13 @@ class TestMarkdownToPdf( unittest.TestCase ):
             parse_image_links( '%s%s' % (input_image, input_image), 'rel-dir/' ),
             '%s%s' % (output_image, output_image) )
 
+        # Image inside link
+        input_image = '[![Figure 5: Live data](live-data.png)](link)'
+        output_image = '[![Figure 5: Live data](%s/live-data.png)](link)' % prefix
+        self.assertEqual( 
+            parse_image_links( input_image, 'rel-dir/' ),
+            output_image )
+
 
     def test_extract_referenced_links(self):
         links = {}
@@ -218,16 +231,47 @@ class TestMarkdownToPdf( unittest.TestCase ):
 
         # Inline link shouldn't be replaced
         self.assertEqual( make_referenced_links_inline('Visit [link_id](link_id)', {'link_id': ('url', 'title')}), 'Visit [link_id](link_id)' )
-        
 
-    def test_parse_non_code_content(self):
-        callback = lambda content: "<no-code>"
 
-        self.assertEqual(parse_non_code_content('abc',callback),'<no-code>')
-        self.assertEqual(parse_non_code_content('abc```this is code```def',callback),'<no-code>```this is code```<no-code>')
-        self.assertEqual(parse_non_code_content('abc```this `is` code```def',callback),'<no-code>```this `is` code```<no-code>')
-        self.assertEqual(parse_non_code_content('abc\n\tc1\n\tc2\ndef',callback),'<no-code>\tc1\n\tc2\n<no-code>')
-        self.assertEqual(parse_non_code_content('abc\n    c1\n    c2\n   d`e`f',callback),'<no-code>    c1\n    c2\n<no-code>`e`<no-code>')
+
+    def test_parse_markdown_inline_links(self):
+        # Simple local link (to section in same file).
+        self.assertEqual(
+            parse_markdown_inline_links(
+                '[link-text](#link)',
+                'foo-dir/',
+                local_link_callback ),
+            '[link-text](#parsed-local-link)'
+        )
+
+        # Simple local link (to section in other file).
+        self.assertEqual(
+            parse_markdown_inline_links(
+                '[link-text](link)',
+                'foo-dir/',
+                local_link_callback ),
+            '[link-text](#parsed-remote-link)'
+        )
+
+        # Simple URL link (shouldn't be parsed).
+        self.assertEqual(
+            parse_markdown_inline_links(
+                '[link-text](www.google.com)',
+                'foo-dir/',
+                local_link_callback ),
+            '[link-text](www.google.com)'
+        )
+
+
+        # Simple link with image inside.
+        self.assertEqual(
+            parse_markdown_inline_links(
+                '[![image](image-link)](#link)',
+                'foo-dir/',
+                local_link_callback ),
+            '[![image](image-link)](#parsed-local-link)'
+        )
+            
 
 if __name__ == "__main__":
     unittest.main()

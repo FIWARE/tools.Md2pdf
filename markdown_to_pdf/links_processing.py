@@ -9,47 +9,6 @@ def print_warning(*objs):
     print("WARNING: ", *objs, file=sys.stderr)
 
 
-def parse_non_code_content(markdown_content, callback):
-    """Apply a callback to every non code content
-
-    Arguments:
-    markdown_content - Markdown content to be parsed
-    callback - Callback to be called on non code content. 
-    """
-    inline_code_regex = re.compile(r'`.+?`')
-    r0 = r'(?:```.*?```)'
-    r1 = r'(?<=\n)(?:(?:\t|    ).*?(?:\n|$))+'
-    block_code_regex = r0 + r'|' + r1
-        
-    return process_unmatching_content(
-        markdown_content,
-        re.compile(block_code_regex), 
-        lambda content : process_unmatching_content(content, inline_code_regex, callback)
-    )
-
-
-def process_unmatching_content(content, regex, callback):
-    """Apply a callback to every substring not matching the given regex
-    
-    Arguments:
-    markdown_content - Markdown content to be parsed
-    regex - regex for content matching
-    callback - Callback to be called on content not maching the regex.
-    """
-    output = ''
-    non_matching_block_start = 0
-
-    for match in regex.finditer(content):
-        output += callback(content[non_matching_block_start:match.start()])
-        output += content[match.start():match.end()]
-        non_matching_block_start = match.end()
-
-    output += callback(content[non_matching_block_start:len(content)])
-
-    return output
-      
-    
-
 def parse_image_links(markdown_content, markdown_filepath):
     """Add a prefix to all the image links in the given Markdown content"""
     regex_str = r'!\[(.*?)\]\((.*?)\)'
@@ -105,11 +64,23 @@ def remove_broken_images(markdown_content):
     return markdown_content
 
 
-def parse_markdown_inline_links(markdown_content, markdown_filepath):
+def update_local_link(link,markdown_filepath):
+    """Makes the given link unique in the final document"""
+    if link[0] != '#':
+        return "#" + slugify_string(os.path.normpath(os.path.join(os.path.dirname(markdown_filepath), link)))
+    else:
+        return "#" + slugify_string(markdown_filepath + link)
+
+
+def parse_markdown_inline_links( 
+    markdown_content,
+    markdown_filepath,
+    local_link_callback = update_local_link
+    ):
     """Parse all the Markdown links in the given Markdown content"""
     link_regexes = [
-        r'\[(\!\[.*?\]\(.*?\))\]\((.*?)\)', # Links with image inside
-        r'(?<!!)\[(.*?)\]\((.*?)\)'         # Links without image inside.
+        r'(?<!!)\[(\!\[.*?\]\(.*?\))\]\((.*?)\)',   # Links with image inside
+        r'(?<!!)\[([^\!].*?)\]\((.*?)\)'            # Links without image inside.
     ]
 
     for regex_str in link_regexes:
@@ -126,11 +97,8 @@ def parse_markdown_inline_links(markdown_content, markdown_filepath):
                     # Ignore links to external URLS
                     if not is_an_url(link):
                         original_ref = "[%s](%s)" % (link_text, link)
-                       			        
-                        if link[0] != '#':
-                            new_link = "#" + slugify_string(os.path.normpath(os.path.join(os.path.dirname(markdown_filepath), link)))
-                        else:
-                            new_link = "#" + slugify_string(markdown_filepath + link)
+                       	
+                        new_link = local_link_callback(link,markdown_filepath)
                         
                         new_ref = "[%s](%s)" % (link_text, new_link)
 
@@ -219,7 +187,7 @@ def generate_pandoc_header_ids(markdown_content, markdown_filepath):
         markdown_output_content += "\n"
         line_index += 1
 
-    return markdown_output_content  
+    return markdown_output_content[:-1]  
 
 
 def process_header_html_anchors(markdown_content, markdown_filepath):
