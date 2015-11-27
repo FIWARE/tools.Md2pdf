@@ -72,8 +72,9 @@ def build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepath
                 markdown_content = prevent_latex_images_floating(markdown_content)
 
                 markdown_content = add_newlines_before_markdown_headers( markdown_content )
-                
 
+                markdown_content = separate_latex_empty_phantom_sections(markdown_content)
+                
                 markdown_content = translate_md_tables(markdown_content)
 
                 file_latex_label = generate_latex_anchor(slugify_string(markdown_filepath))
@@ -196,7 +197,7 @@ def generate_pdf_from_markdown(pdf_filepath, markdown_filepath):
     latex_config_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'latex-configuration')
     latex_code_sections_config_path = os.path.join(latex_config_dir, 'code-sections.tex')
 
-    call(["pandoc","--latex-engine=xelatex", "--toc-depth=3", "--listings", "-H", latex_code_sections_config_path, "--toc", "--from", "markdown+lists_without_preceding_blankline+hard_line_breaks", "--output", pdf_filepath, markdown_filepath])
+    call(["pandoc","--latex-engine=xelatex", "--toc-depth=3", "--listings", "-H", latex_code_sections_config_path, "--toc", "--from", "markdown+lists_without_preceding_blankline", "--output", pdf_filepath, markdown_filepath])
 
 
 def generate_md_cover(configuration_file_path, temp_cover_path):
@@ -246,6 +247,19 @@ def render_pdf_cover(input_md_path, output_pdf_path):
 def merge_cover_with_content(pdf_files_list, output_pdf):
     """ merge two pdf files"""
     call(["pdftk", pdf_files_list[0], pdf_files_list[1], "output", output_pdf])
+
+
+def separate_latex_empty_phantom_sections(markdown_content):
+    """Fixes an LaTeX error caused by having one empty \phantomsection
+
+    Fixes an LaTeX error caused by having one \phantomsection\label{*} 
+    followed inmediatly by other (without content in the middle)"""
+    return re.sub(
+        r'\\phantomsection(.*?)\n\\phantomsection',
+        r'\\phantomsection\1\n\n\\phantomsection',
+        markdown_content
+    )
+
 
 def main():
     #first check requirements

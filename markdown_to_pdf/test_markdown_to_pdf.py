@@ -380,5 +380,19 @@ class TestMarkdownToPdf( unittest.TestCase ):
         )
 
 
+    def test_separate_latex_empty_phantom_sections(self):
+        # One empty phantomsection.
+        input_str =\
+            '\phantomsection\label{foo}\n' +\
+            '\phantomsection\label{foo}'
+        expected_output =\
+            '\phantomsection\label{foo}\n\n' +\
+            '\phantomsection\label{foo}'
+        self.assertEqual( 
+            separate_latex_empty_phantom_sections(input_str),
+            expected_output
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

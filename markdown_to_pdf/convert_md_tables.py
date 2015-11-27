@@ -51,8 +51,7 @@ def count_row_columns(row):
 
 def split_row_columns(row):
     # TODO: Don't split \|
-    columns = row.strip().strip('|').split('|')
-    return [column.strip() for column in columns]
+    return row.strip('|').split('|')
 
 
 def generate_md_table(header, header_separator, rows):
