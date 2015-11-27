@@ -11,7 +11,7 @@ def print_warning(*objs):
 
 def parse_image_links(markdown_content, markdown_filepath):
     """Add a prefix to all the image links in the given Markdown content"""
-    regex_str = r'!\[(.*?)\]\((.*?)\)'
+    regex_str = r'!\[(.*?(?:\n.*?)?)\]\((.*?)\)'
     reference_regex = re.compile(regex_str)
 
     references_to_change = reference_regex.findall(markdown_content)
@@ -36,7 +36,7 @@ def parse_image_links(markdown_content, markdown_filepath):
 
 def remove_broken_images(markdown_content):
     """Check the destination of all image links and remove the invalid ones"""
-    regex_str = r'!\[(.*?)\]\((.*?)\)'
+    regex_str = r'!\[(.*?(?:\n.*?)?)\]\((.*?)\)'
     reference_regex = re.compile(regex_str)
 
     references_to_change = reference_regex.findall(markdown_content)
@@ -79,8 +79,8 @@ def parse_markdown_inline_links(
     ):
     """Parse all the Markdown links in the given Markdown content"""
     link_regexes = [
-        r'(?<!!)\[(\!\[.*?\]\(.*?\))\]\((.*?)\)',   # Links with image inside
-        r'(?<!!)\[([^\!].*?)\]\((.*?)\)'            # Links without image inside.
+        r'(?<!!)\[(\!\[.*?\n?.*?\]\(.*?\))\]\((.*?)\)', # Links with image inside
+        r'(?<!!)\[([^\!].*?\n?.*?)\]\((.*?)\)'          # Links without image inside.
     ]
 
     for regex_str in link_regexes:
@@ -203,15 +203,15 @@ def process_header_html_anchors(markdown_content, markdown_filepath):
     markdown_filepath - Path to the MD file containing previous content.
     """
     anchor_id_prefix = slugify_string(markdown_filepath)
-   
+ 
     markdown_content = re.sub( 
-        r'(#+)\s*<a name="([^\"]+)"><\/a>\s*(.*?)',
+        r'(#+)\s*<a name="([^\"]+)"(?:(?:><\/a>)|(?:\/>))\s*(.*?)',
         lambda match: process_header_html_anchor(match.groups()[1], match.groups()[2], match.groups()[0], anchor_id_prefix), 
         markdown_content, 
         flags=re.IGNORECASE )
 
     markdown_content = re.sub( 
-        r'<a name="([^\"]+)"><\/a>\s*(.*?)\n((?:=+)|(?:-+))',
+        r'<a name="([^\"]+)"(?:(?:><\/a>)|(?:\/>))\s*(.*?)\n((?:=+)|(?:-+))',
         lambda match: process_header_html_anchor(match.groups()[0], match.groups()[1], match.groups()[2], anchor_id_prefix), 
         markdown_content, 
         flags=re.IGNORECASE )
@@ -243,13 +243,17 @@ def process_html_anchors(markdown_content, markdown_filepath):
     # Anchors in headers requires special treatment. Handle them first.
     markdown_content = process_header_html_anchors(markdown_content, markdown_filepath)
 
-    anchor_regex = r'<a +name="(.*)" *></a>'
+    anchor_regexes = [
+        r'<a[ \t]+name="(.*)"[ \t]*></a>',
+        r'<a[ \t]+name="(.*)"[ \t]*/>'
+    ]
     
-    markdown_content = re.sub( 
-        anchor_regex, 
-        lambda match_object: process_html_anchor( match_object, anchor_id_prefix ), 
-        markdown_content, 
-        flags=re.IGNORECASE )
+    for anchor_regex in anchor_regexes:
+        markdown_content = re.sub( 
+            anchor_regex, 
+            lambda match_object: process_html_anchor( match_object, anchor_id_prefix ), 
+            markdown_content, 
+            flags=re.IGNORECASE )
    
     return markdown_content
 
@@ -294,6 +298,8 @@ def extract_referenced_links(markdown_content,referenced_links):
                 referenced_links[id_] = (link, title)
             else:
                 markdown_output_content += markdown_line + '\n'
+        else:
+            markdown_output_content += markdown_line + '\n'
 
     # Strip the last \n character
     if len(markdown_output_content) > 0:

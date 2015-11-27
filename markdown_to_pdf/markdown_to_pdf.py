@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import yaml
 from subprocess import call, Popen
 import os
@@ -8,10 +9,13 @@ import shutil
 import pypandoc
 import string
 import errno
+import getopt
+import tempfile
 
 
 from convert_md_tables import *
 from links_processing import *
+from check_requirements import *
 
 
 def get_markdown_filepaths(configuration_filepath):
@@ -31,13 +35,15 @@ def get_markdown_filepaths(configuration_filepath):
 
 
 def build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepaths):
-    with open(monolitic_markdown_filepath, 'w') as monolitic_markdown_file:
+    with open(monolitic_markdown_filepath, 'wb') as monolitic_markdown_file:
         for markdown_filepath in markdown_filepaths:
-            temp_file = '/var/tmp/temp_md_m2pdf.md'
+            temp_file = os.path.join(tempfile.gettempdir(),'temp_md_m2pdf.md')
             
             with open(markdown_filepath, 'rU') as markdown_file:
                 markdown_content = markdown_file.read().decode('utf-8')
                 
+                markdown_content = fix_empty_lines(markdown_content)
+
                 markdown_content = fix_blanck_spaces_before_code_tag(markdown_content)
 
                 markdown_content = fix_html_before_title(markdown_content)
@@ -45,25 +51,29 @@ def build_monolitic_markdown_file(monolitic_markdown_filepath, markdown_filepath
                 
                 markdown_content = fix_new_line_after_img(markdown_content)
 
-                markdown_content = pypandoc.convert(markdown_content, 'markdown_github', format='md')
+                markdown_content = pypandoc.convert(markdown_content, 'markdown_github+hard_line_breaks', format='markdown_github')
+                
+                markdown_content = pypandoc.convert(markdown_content, 'markdown_github', format='markdown+hard_line_breaks+lists_without_preceding_blankline')
+
 
                 markdown_content = fix_special_characters_inside_links(markdown_content)
                 
                 markdown_content = parse_image_links(markdown_content, markdown_filepath)
-    		markdown_content = remove_broken_images(markdown_content)
+                markdown_content = remove_broken_images(markdown_content)
 
-    		markdown_content = convert_referenced_links_to_inline(markdown_content)
+                markdown_content = convert_referenced_links_to_inline(markdown_content)
 
-		markdown_content = parse_markdown_inline_links(markdown_content, markdown_filepath)
+                markdown_content = parse_markdown_inline_links(markdown_content, markdown_filepath)
     
-    		markdown_content = generate_pandoc_header_ids(markdown_content, markdown_filepath)
+                markdown_content = generate_pandoc_header_ids(markdown_content, markdown_filepath)
 
-    		markdown_content = process_html_anchors( markdown_content, markdown_filepath )
+                markdown_content = process_html_anchors( markdown_content, markdown_filepath )
    
-    		markdown_content = prevent_latex_images_floating(markdown_content)
+                markdown_content = prevent_latex_images_floating(markdown_content)
 
-    		markdown_content = add_newlines_before_markdown_headers( markdown_content )
+                markdown_content = add_newlines_before_markdown_headers( markdown_content )
                 
+
                 markdown_content = translate_md_tables(markdown_content)
 
                 file_latex_label = generate_latex_anchor(slugify_string(markdown_filepath))
@@ -110,6 +120,21 @@ def fix_new_line_after_img(markdown_content):
 
     return markdown_content
 
+def fix_empty_lines(markdown_content):
+    #transform to normal whitespace
+    markdown_content = markdown_content.replace(u'\u2000',' ')
+    markdown_content = markdown_content.replace(u'\u2001',' ')
+    markdown_content = markdown_content.replace(u'\u2002',' ')
+    markdown_content = markdown_content.replace(u'\u2003',' ')
+    markdown_content = markdown_content.replace(u'\u2004',' ')
+    markdown_content = markdown_content.replace(u'\u2005',' ')
+    markdown_content = markdown_content.replace(u'\u2006',' ')
+    markdown_content = markdown_content.replace(u'\u2007',' ')
+    markdown_content = markdown_content.replace(u'\u2008',' ')
+    markdown_content = markdown_content.replace(u'\u2009',' ')
+    markdown_content = markdown_content.replace(u'\u200a',' ')
+    #replace whitespace
+    return re.sub(r'\n[ \t]*\n','\n\n',markdown_content)
 
 
 def add_newlines_before_markdown_headers(markdown_content):
@@ -171,7 +196,7 @@ def generate_pdf_from_markdown(pdf_filepath, markdown_filepath):
     latex_config_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'latex-configuration')
     latex_code_sections_config_path = os.path.join(latex_config_dir, 'code-sections.tex')
 
-    call(["pandoc","--latex-engine=xelatex", "--toc-depth=3", "--listings", "-H", latex_code_sections_config_path, "--toc", "--from", "markdown", "--output", pdf_filepath, markdown_filepath])
+    call(["pandoc","--latex-engine=xelatex", "--toc-depth=3", "--listings", "-H", latex_code_sections_config_path, "--toc", "--from", "markdown+lists_without_preceding_blankline+hard_line_breaks", "--output", pdf_filepath, markdown_filepath])
 
 
 def generate_md_cover(configuration_file_path, temp_cover_path):
@@ -208,13 +233,14 @@ def generate_md_cover(configuration_file_path, temp_cover_path):
 
     return True
 
+
 def convert_from_GFM(original_md, converted_md):
      call(["pandoc", "--from", "markdown_github", "--to", "markdown", "--output", converted_md, original_md])
 
 def render_pdf_cover(input_md_path, output_pdf_path):
     """ convert a MD cover to a PDF """
 
-    call(["pandoc", "--from", "markdown", "--output", output_pdf_path, input_md_path], cwd="/var/tmp/")
+    call(["pandoc", "--from", "markdown", "--output", output_pdf_path, input_md_path], cwd=tempfile.gettempdir())
 
 
 def merge_cover_with_content(pdf_files_list, output_pdf):
@@ -222,25 +248,44 @@ def merge_cover_with_content(pdf_files_list, output_pdf):
     call(["pdftk", pdf_files_list[0], pdf_files_list[1], "output", output_pdf])
 
 def main():
-    if len(sys.argv) != 3:
-        print("ERROR: This script expects 2 arguments")
-        print("Usage: \n\t" + sys.argv[0] + " <output-pdf-file> <input-conf-file>")
-        sys.exit(-1)
+    #first check requirements
+    check_all_requirements()
+    # Parse user arguments.
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"i:o:",["input=","output="])
+    except getopt.GetoptError as error:
+        print(str(error)) 
+        print('Usage: \n\tmd2pdf -i <input-conf-file> -o <output-pdf-file>')
+        sys.exit(2)
 
-    monolitic_markdown_filepath = "/var/tmp/markdown-to-pdf-temp.md"
-    temp_cover_md_path = "/var/tmp/markdown-to-pdf-cover-temp.md"
-    temp_pdf_path = "/var/tmp/markdown-to-pdf-content-temp.pdf"
-    temp_cover_pdf_path = "/var/tmp/markdown-to-pdf-cover-temp.pdf"
+    # Default argument values.
+    input_conf_file = 'md2pdf.yml'
+    output_pdf_file = 'output.pdf'
+
+    # Process user arguments.
+    for opt, arg in opts:
+        if opt in ("-i", "--input"):
+            input_conf_file = arg
+        elif opt in ("-o", "--output"):
+            output_pdf_file = arg
+
+    # Check that input file exists.
+    if not os.path.isfile(input_conf_file):
+        print('ERROR: input file [%s] not found' % (input_conf_file), file=sys.stderr)
+        sys.exit(2)
+
+    # Set auxiliar file paths.
+    temp_dirpath = tempfile.gettempdir()
+    monolitic_markdown_filepath = os.path.join(temp_dirpath,'markdown-to-pdf-temp.md')
+    temp_cover_md_path = os.path.join(temp_dirpath,'markdown-to-pdf-cover-temp.md')
+    temp_pdf_path = os.path.join(temp_dirpath,'markdown-to-pdf-content-temp.pdf')
+    temp_cover_pdf_path = os.path.join(temp_dirpath,'markdown-to-pdf-cover-temp.pdf')
     cover_template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cover_template')
 
+    shutil.copy2(os.path.join(cover_template_dir, 'cover_img.png'), os.path.join(temp_dirpath,'cover_img.png'))
 
-    shutil.copy2(os.path.join(cover_template_dir, 'cover_img.png'), "/var/tmp/cover_img.png")
-
-    shutil.copy2(os.path.join(cover_template_dir, 'fiware_logo.png'), "/var/tmp/fiware_logo.png")
+    shutil.copy2(os.path.join(cover_template_dir, 'fiware_logo.png'), os.path.join(temp_dirpath,'fiware_logo.png'))
     
-    input_conf_file = sys.argv[2]
-    output_pdf_file = sys.argv[1]
-
     output_dir = os.path.dirname(output_pdf_file)
     
     if '' != output_dir:

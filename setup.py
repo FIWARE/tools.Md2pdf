@@ -30,6 +30,7 @@ setup(name='markdown_to_pdf',
       entry_points={
         'console_scripts': [
           'markdown_to_pdf = markdown_to_pdf.markdown_to_pdf:main',
+          'md2pdf = markdown_to_pdf.markdown_to_pdf:main'
         ],
       },
       classifiers=[ 

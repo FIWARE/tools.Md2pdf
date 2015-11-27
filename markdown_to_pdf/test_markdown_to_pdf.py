@@ -80,11 +80,22 @@ class TestMarkdownToPdf( unittest.TestCase ):
         self.assertEqual( process_html_anchors( '<a name="bar"></a>', 'foo' ), '\\phantomsection\\label{foobar}' )
         self.assertEqual( process_html_anchors( '<a name="bar"></A>', 'foo' ), '\\phantomsection\\label{foobar}' )
         self.assertEqual( process_html_anchors( '<A nAmE="bar"></a>', 'foo' ), '\\phantomsection\\label{foobar}' )
+        self.assertEqual( process_html_anchors( '<a name="bar"/>', 'foo' ), '\\phantomsection\\label{foobar}' )
+        self.assertEqual( process_html_anchors( '<a name="bar" />', 'foo' ), '\\phantomsection\\label{foobar}' )
+        self.assertEqual( process_html_anchors( '<A nAmE="bar"\t ></a>', 'foo' ), '\\phantomsection\\label{foobar}' )
         self.assertEqual( process_html_anchors( 'prefix<A    nAmE="bar"></a>suffix', 'foo' ), 'prefix\\phantomsection\\label{foobar}suffix' )
         self.assertEqual( process_html_anchors( '<a name="BaR"></a>', 'foo' ), '\\phantomsection\\label{foobar}' )
         
         # Anchor in header.
         inputStr = '#<a name="top"></a>Filtering results'
+        expectedOuputStr = (
+            "\\phantomsection\\label{filemdtop}\n\n" +
+            "# Filtering results"
+        )
+        self.assertEqual( process_html_anchors( inputStr, 'file.md' ), expectedOuputStr )
+
+        # Autoclosed anchor in header
+        inputStr = '#<a name="top"/>Filtering results'
         expectedOuputStr = (
             "\\phantomsection\\label{filemdtop}\n\n" +
             "# Filtering results"
@@ -99,8 +110,24 @@ class TestMarkdownToPdf( unittest.TestCase ):
         )
         self.assertEqual( process_html_anchors( inputStr, 'file.md' ), expectedOuputStr )
 
+        # Autoclosed anchor in underlined header (=).
+        inputStr = '<a name="top"/>Filtering results\n==='
+        expectedOuputStr = (
+            "\\phantomsection\\label{filemdtop}\n\n" +
+            "Filtering results\n==="
+        )
+        self.assertEqual( process_html_anchors( inputStr, 'file.md' ), expectedOuputStr )
+
         # Anchor in underlined header (-).
         inputStr = '<a name="top"></a>Filtering results\n---'
+        expectedOuputStr = (
+            "\\phantomsection\\label{filemdtop}\n\n" +
+            "Filtering results\n---"
+        )
+        self.assertEqual( process_html_anchors( inputStr, 'file.md' ), expectedOuputStr )
+
+        # Autoclosed anchor in underlined header (-).
+        inputStr = '<a name="top"/>Filtering results\n---'
         expectedOuputStr = (
             "\\phantomsection\\label{filemdtop}\n\n" +
             "Filtering results\n---"
@@ -123,6 +150,11 @@ class TestMarkdownToPdf( unittest.TestCase ):
         self.assertEqual( 
             parse_image_links( '![alt_text](link)', 'rel-dir/' ),
             '![alt_text](%s/link)' % prefix )
+
+        # Simple image without title and newline
+        self.assertEqual( 
+            parse_image_links( '![alt\n_text](link)', 'rel-dir/' ),
+            '![alt\n_text](%s/link)' % prefix )
 
         # Simple image with title
         self.assertEqual( 
@@ -204,6 +236,16 @@ class TestMarkdownToPdf( unittest.TestCase ):
         self.assertEqual( markdown_content, '[id]: "url"' )
         self.assertEqual( links, {} )
 
+        # Code block
+        input_markdown_content = \
+            'For a list of available task, type\n' +\
+            '```bash\n' +\
+            'grunt --help\n' +\
+            '```'
+        markdown_content = extract_referenced_links(input_markdown_content, links )
+        self.assertEqual( markdown_content, input_markdown_content )
+        self.assertEqual( links, {} )
+
 
     def test_make_referenced_links_inline(self):
         links_dict = {
@@ -244,6 +286,24 @@ class TestMarkdownToPdf( unittest.TestCase ):
             '[link-text](#parsed-local-link)'
         )
 
+        # Simple local link with new line.
+        self.assertEqual(
+            parse_markdown_inline_links(
+                '[action from the\n    request](#request-action)',
+                'foo-dir/',
+                local_link_callback ),
+            '[action from the\n    request](#parsed-local-link)'
+        )
+
+        # Simple local link with new line and tab.
+        self.assertEqual(
+            parse_markdown_inline_links(
+                '[action from the\n\t    request](#request-action)',
+                'foo-dir/',
+                local_link_callback ),
+            '[action from the\n\t    request](#parsed-local-link)'
+        )
+
         # Simple local link (to section in other file).
         self.assertEqual(
             parse_markdown_inline_links(
@@ -271,7 +331,54 @@ class TestMarkdownToPdf( unittest.TestCase ):
                 local_link_callback ),
             '[![image](image-link)](#parsed-local-link)'
         )
-            
+
+        # Simple link with image inside with new line.
+        self.assertEqual(
+            parse_markdown_inline_links(
+                '[![ima\nge](image-link)](#link)',
+                'foo-dir/',
+                local_link_callback ),
+            '[![ima\nge](image-link)](#parsed-local-link)'
+        )
+
+
+    def test_have_table_separator(self):
+        # Simple text shouldn't be recognized as table separator.
+        self.assertEqual( 
+            have_table_separator('foo'),
+            False
+        )
+
+        # Empty list item shouldn't be recognized as table separator.
+        self.assertEqual( 
+            have_table_separator('- '),
+            False
+        )
+
+        # Simple table separator.
+        self.assertEqual( 
+            have_table_separator('|---|'),
+            True
+        )
+
+        # Simple table separator (with spaces).
+        self.assertEqual( 
+            have_table_separator('| --- |'),
+            True
+        )
+
+        # Table separator with alignment specifiers.
+        self.assertEqual( 
+            have_table_separator('| :- | :-: | -: |'),
+            True
+        )
+
+        # Table row, not separator
+        self.assertEqual( 
+            have_table_separator('| Method | Path | Action|'),
+            False
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
