@@ -1,5 +1,47 @@
 % Contents of listings-setup.tex
 \usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[htt]{hyphenat}
+\usepackage{xstring}
+\usepackage{forloop}
+\usepackage{seqsplit}
+%\usepackage{url}
+
+
+
+
+%\mathchardef\UrlBreakPenalty=10000
+%\mathchardef\UrlBigBreakPenalty=10000
+
+\newsavebox\MyBreakChar%
+\sbox\MyBreakChar{}% char to display the break after non char
+\newsavebox\MySpaceBreakChar%
+\sbox\MySpaceBreakChar{\hyp}% char to display the break after space
+\makeatletter%
+\newcommand*{\BreakableChar}[1][\MyBreakChar]{%
+  \leavevmode%
+  \prw@zbreak%
+  \discretionary{\usebox#1}{}{}%
+  \prw@zbreak%
+}%
+\makeatother
+
+
+\let\oldTexttt\texttt
+\renewcommand{\texttt}[1]{\oldTexttt{\seqsplit{#1}}}
+
+\newcommand{\tableurl}[1]{%
+  \begingroup
+  \ttfamily
+  \begingroup\lccode`~=`/\lowercase{\endgroup\def~}{/\discretionary{}{}{}}%
+  \begingroup\lccode`~=`.\lowercase{\endgroup\def~}{.\discretionary{}{}{}}%
+  \begingroup\lccode`~=`_\lowercase{\endgroup\def~}{_\discretionary{}{}{}}%
+
+  \catcode`/=\active\catcode`.=\active\catcode`_=\active
+  %\catcode`/=\active\catcode`.=\active
+  \scantokens{#1\noexpand}%
+  \endgroup
+}
 
 \lstset{
     basicstyle=\ttfamily,
@@ -21,4 +63,67 @@
     escapeinside={\%*}{*)},
     linewidth=\textwidth,
     basewidth=0.5em,
+    literate={-}{{-\allowbreak}}{1}
+        {a}{{a\allowbreak}}{1}
+        {b}{{b\allowbreak}}{1}
+        {c}{{c\allowbreak}}{1}
+        {d}{{d\allowbreak}}{1}
+        {e}{{e\allowbreak}}{1}
+        {f}{{f\allowbreak}}{1}
+        {g}{{g\allowbreak}}{1}
+        {h}{{h\allowbreak}}{1}
+        {i}{{i\allowbreak}}{1}
+        {j}{{j\allowbreak}}{1}
+        {k}{{k\allowbreak}}{1}
+        {l}{{l\allowbreak}}{1}
+        {m}{{m\allowbreak}}{1}
+        {n}{{n\allowbreak}}{1}
+        {o}{{o\allowbreak}}{1}
+        {p}{{p\allowbreak}}{1}
+        {q}{{q\allowbreak}}{1}
+        {r}{{r\allowbreak}}{1}
+        {s}{{s\allowbreak}}{1}
+        {t}{{t\allowbreak}}{1}
+        {u}{{u\allowbreak}}{1}
+        {v}{{v\allowbreak}}{1}
+        {w}{{w\allowbreak}}{1}
+        {x}{{x\allowbreak}}{1}
+        {y}{{y\allowbreak}}{1}
+        {z}{{z\allowbreak}}{1}
+        {A}{{A\allowbreak}}{1}
+        {B}{{B\allowbreak}}{1}
+        {C}{{C\allowbreak}}{1}
+        {D}{{D\allowbreak}}{1}
+        {E}{{E\allowbreak}}{1}
+        {F}{{F\allowbreak}}{1}
+        {G}{{G\allowbreak}}{1}
+        {H}{{H\allowbreak}}{1}
+        {I}{{I\allowbreak}}{1}
+        {J}{{J\allowbreak}}{1}
+        {K}{{K\allowbreak}}{1}
+        {L}{{L\allowbreak}}{1}
+        {M}{{M\allowbreak}}{1}
+        {N}{{N\allowbreak}}{1}
+        {O}{{O\allowbreak}}{1}
+        {P}{{P\allowbreak}}{1}
+        {Q}{{Q\allowbreak}}{1}
+        {R}{{R\allowbreak}}{1}
+        {S}{{S\allowbreak}}{1}
+        {T}{{T\allowbreak}}{1}
+        {U}{{U\allowbreak}}{1}
+        {V}{{V\allowbreak}}{1}
+        {W}{{W\allowbreak}}{1}
+        {X}{{X\allowbreak}}{1}
+        {Y}{{Y\allowbreak}}{1}
+        {Z}{{Z\allowbreak}}{1}
+        {1}{{1\allowbreak}}{1}
+        {2}{{2\allowbreak}}{1}
+        {3}{{3\allowbreak}}{1}
+        {4}{{4\allowbreak}}{1}
+        {5}{{5\allowbreak}}{1}
+        {6}{{6\allowbreak}}{1}
+        {7}{{7\allowbreak}}{1}
+        {8}{{8\allowbreak}}{1}
+        {9}{{9\allowbreak}}{1}
+        {0}{{0\allowbreak}}{1}
 }

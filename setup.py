@@ -25,10 +25,12 @@ setup(name='markdown_to_pdf',
       install_requires=[
         'pyyaml>=3.11',
         'markdown>=2.6.2',
+        'pypandoc>=0.9.9'
       ],
       entry_points={
         'console_scripts': [
           'markdown_to_pdf = markdown_to_pdf.markdown_to_pdf:main',
+          'md2pdf = markdown_to_pdf.markdown_to_pdf:main'
         ],
       },
       classifiers=[ 
