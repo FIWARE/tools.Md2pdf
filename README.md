@@ -113,7 +113,7 @@ python2 markdown_to_pdf/test_markdown_to_pdf.py
 
 
 
-## Using the provided Docker machine
+## Using the provided Dockerfile
 
 A dockerfile with the configuration needed for use the tool is provided inside the docker folder.
 
