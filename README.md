@@ -122,14 +122,14 @@ To build the Docker image simply use the command `docker build -t <image_name> .
 Once the image is created, you can execute it with:
 
 ```
-docker run --volume=<host_machine_path>:<docker_machine_path> <image_name> -o <docker_machine_output_path> -i <docker_machine_conf_path>
+docker run --volume=<host_machine_path>:<docker_container_path> <image_name> -o <docker_container_output_path> -i <docker_container_conf_path>
 ```
 
 Where:
  * **<host_machine_path>** is the folder where the documentation is hosted in your machine.
- * **<docker_machine_path>** is the folder where the <host_machine_path> is mounted in the Docker machine.
- * **<docker_machine_output_path>** is the path to the output file related to the Docker machine.
- * **<docker_machine_conf_path>** is where the configuration is located inside the Docker machine.
+ * **<docker_container_path>** is the folder where the <host_machine_path> is mounted in the Docker cointaier.
+ * **<docker_container_output_path>** is the path to the output file related to the Docker cotainer.
+ * **<docker_container_conf_path>** is where the configuration is located inside the Docker container.
  * **<image_name>** is the image name used when the image was created.
  
 **Example**:
