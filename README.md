@@ -106,6 +106,13 @@ For runing unit tests ([unittest](https://docs.python.org/2/library/unittest.htm
 python2 markdown_to_pdf/test_markdown_to_pdf.py
 ```
 
+### Special usage
+
+* It also possible to use a readthedocs configuration instead of the previously described configuration file. 
+* Cover metadata could be specified using a different configuration if **-c** option is passed.
+
+
+
 ## Using the provided Docker machine
 
 A dockerfile with the configuration needed for use the tool is provided inside the docker folder.

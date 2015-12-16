@@ -25,12 +25,15 @@ setup(name='markdown_to_pdf',
       install_requires=[
         'pyyaml>=3.11',
         'markdown>=2.6.2',
-        'pypandoc>=0.9.9'
+        'pypandoc>=0.9.9',
+        'pandocfilters>=1.2.4'
       ],
       entry_points={
         'console_scripts': [
           'markdown_to_pdf = markdown_to_pdf.markdown_to_pdf:main',
-          'md2pdf = markdown_to_pdf.markdown_to_pdf:main'
+          'md2pdf = markdown_to_pdf.markdown_to_pdf:main',
+          'md2pdf_pandoc_filter = markdown_to_pdf.pandoc_filters:main',
+          'md2pdf_pandoc_paragraph_filter = markdown_to_pdf.paragraph_filters:main'
         ],
       },
       classifiers=[ 

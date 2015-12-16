@@ -52,14 +52,24 @@ def count_row_columns(row):
     return stripped_row.count('|') - stripped_row.count('\|') + 1
 
 
-def split_row_columns(row):
-    # TODO: Don't split \|
+def split_row_columns(row,n_header_columns=0):
+    columns = []
     if platform == "win32":
         # If we don't strip columns in Windows tables aren't rendered in PDF.
-        columns = row.strip().strip('|').split('|')
-        return [column.strip() for column in columns]
+        # TODO: Don't split \|
+        unstripped_columns = row.strip().strip('|').split('|')
+        columns = [column.strip() for column in unstripped_columns]
     else:
-        return row.strip('|').split('|')
+        # TODO: Don't split \|
+        columns = row.strip('|').split('|')
+    
+    # If a row has less lines than the table header, fill it with empty cells
+    # We don't have to do the opposite (truncating rows with more lines than
+    # the table header) because Pandoc conversion does that for us.
+    if n_header_columns != 0 and len(columns) < n_header_columns:
+        columns = columns + [''] * (n_header_columns - len(columns))
+
+    return columns
 
 
 def generate_md_table(header, header_separator, rows):
@@ -68,22 +78,28 @@ def generate_md_table(header, header_separator, rows):
     n_cols = count_row_columns(header)
     table=[]
     if count_row_columns(header_separator) != n_cols:
-        print("Mismatched number of columns for the header", n_cols, " <> ", count_row_columns(header_separator))
+        print(
+            (
+                'Mismatched number of columns between header (%d)' +
+                'and separator (%d) in table\n' +
+                '  Table header: [%s]\n'
+            ) % (
+                n_cols,
+                count_row_columns(header_separator),
+                header
+            )
+        )
         return [header]+[header_separator]+rows
 
     
     table.append(split_row_columns(header))
 
     for row in rows:
-        if count_row_columns(row) != n_cols:
-            print("Mismatched number of columns for the row")
-            return [header]+[header_separator]+rows
-        
-        table.append(split_row_columns(row))
+        table.append(split_row_columns(row,n_cols))
     
     table = fix_table_hyphenation(table)
 
-    col_lengths = [max(len(str(x)) for x in col) for col in zip(*table)]
+    col_lengths = [max(len(x) for x in col) for col in zip(*table)]
 
     col_lengths = [int(math.ceil(col_len + (sum(col_lengths)-col_len)*0.2 )) for col_len in col_lengths]
 

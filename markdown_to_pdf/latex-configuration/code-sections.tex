@@ -5,13 +5,48 @@
 \usepackage{xstring}
 \usepackage{forloop}
 \usepackage{seqsplit}
+\usepackage{enumitem}
 %\usepackage{url}
 
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+ 
+% Increase max. nesting level for unordered lists
+\setlistdepth{8}
+\setlist[itemize,1]{label=$\bullet$}
+\setlist[itemize,2]{label={-}}
+\setlist[itemize,3]{label=$\bullet$}
+\setlist[itemize,4]{label={-}}
+\setlist[itemize,5]{label=$\bullet$}
+\setlist[itemize,6]{label={-}}
+\setlist[itemize,7]{label=$\bullet$}
+\setlist[itemize,8]{label={-}}
+\renewlist{itemize}{itemize}{8}
 
-
+% Increase max. nesting level for ordered lists
+\setenumerate[0]{label=\arabic*)}
+\setenumerate[1]{label=\arabic*)}
+\setenumerate[2]{label=\arabic*)}
+\setenumerate[3]{label=\arabic*)}
+\setenumerate[4]{label=\arabic*)}
+\setenumerate[5]{label=\arabic*)}
+\setenumerate[6]{label=\arabic*)}
+\setenumerate[7]{label=\arabic*)}
+\setenumerate[8]{label=\arabic*)}
+\renewlist{enumerate}{enumerate}{8}
 
 %\mathchardef\UrlBreakPenalty=10000
 %\mathchardef\UrlBigBreakPenalty=10000
+
+% Shortcut command for creating anchors.
+\newcommand{\anchor}[1]{
+    \mbox{}\phantomsection\label{#1}
+}
 
 \newsavebox\MyBreakChar%
 \sbox\MyBreakChar{}% char to display the break after non char
