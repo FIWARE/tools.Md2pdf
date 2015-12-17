@@ -113,11 +113,11 @@ python2 markdown_to_pdf/test_markdown_to_pdf.py
 
 
 
-## Using the provided Dockerfile
+## Usage with Docker
 
-A dockerfile with the configuration needed for use the tool is provided inside the docker folder.
+The tool is published in the Docker Hub repository as fiwareulpgc/markdown-to-pdf. You can also build it from the dockerfile provided inside the docker folder. 
 
-To build the Docker image simply use the command `docker build -t <image_name> .` from docker folder. Don't forget the final dot.
+ To build the Docker image with the Dockerfile simply use the command `docker build -t <image_name> .` inside the docker folder. Don't forget the final dot.
 
 Once the image is created, you can execute it with:
 
@@ -125,10 +125,16 @@ Once the image is created, you can execute it with:
 docker run --volume=<host_machine_path>:<docker_container_path> <image_name> -o <docker_container_output_path> -i <docker_container_conf_path>
 ```
 
+If you are using the Docker Hub container simply replace **<image_name>** by **fiwareulpgc/markdown-to-pdf**:
+
+```
+docker run --volume=<host_machine_path>:<docker_container_path> fiwareulpgc/markdown-to-pdf -o <docker_container_output_path> -i <docker_container_conf_path>
+```
+
 Where:
  * **<host_machine_path>** is the folder where the documentation is hosted in your machine.
- * **<docker_container_path>** is the folder where the <host_machine_path> is mounted in the Docker cointaier.
- * **<docker_container_output_path>** is the path to the output file related to the Docker cotainer.
+ * **<docker_container_path>** is the folder where the <host_machine_path> is mounted in the Docker container.
+ * **<docker_container_output_path>** is the path to the output file related to the Docker container.
  * **<docker_container_conf_path>** is where the configuration is located inside the Docker container.
  * **<image_name>** is the image name used when the image was created.
  
@@ -155,7 +161,14 @@ We should generate the documentation with the command:
 docker run --volume=/User/username/ExampleEnabler/:/m2pdf m2pdf-docker -o /m2pdf/documentation.pdf -i /m2pdf/docs/m2pdf.yml
 ```
 
-**IMPORTANT NOTE:** All documentation must be located under the <host_machine_path> and alll references between its elements (a link to another document, an image..) should be relatives.
+If we are using the Docker Hub Container the command should be:
+
+```
+docker run --volume=/User/username/ExampleEnabler/:/m2pdf fiwareulpgc/markdown-to-pdf -o /m2pdf/documentation.pdf -i /m2pdf/docs/m2pdf.yml
+```
+
+
+**IMPORTANT NOTE:** All documentation must be located under the <host_machine_path> and all references between its elements (a link to another document, an image..) should be relative.
 
 
 ## Markdown guidelines
