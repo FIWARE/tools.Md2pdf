@@ -11,17 +11,11 @@ A list of considerations that must be followed for writing the markdown files is
 
 ## Quick Start Guide (With Docker)
 
-This section assumes that you already have installed dokcer in your machine. If you don't, you can install it following the instruccions for your operating system in <https://docs.docker.com/engine/installation/>
+This section assumes that you already have installed Docker in your machine. If you don't, you can install it following the instruccions for your operating system in <https://docs.docker.com/engine/installation/>
 
-With docker installed in your local machine, you can execute md2pdf like:
+### Using a readthedocs or MkDocs configuration file
 
-```
-docker run -v=<path_to_documentation_folder>:<docker_path> fiware-ulpgc/markdown-to-pdf -i <configuration_file> -o <output_file>
-```
-
-### Using a readthedocs or mkdocs configuration file
-
-If you have a readthedocs or mkdocs configuration file, you can use it directly with md2pdf.
+If you have a *readthedocs* or *MkDocs* configuration file, you can use it directly with md2pdf.
 
 for example, if you have your documentation under the folder `/Users/myusername/myEnabler` with an structure like:
 
@@ -39,7 +33,7 @@ mkdocs.yml
 You can run the command 
 
 ```
-docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown.to-pdf -i /md2pdf/mkdocs.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/mkdocs.yml -o /md2pdf/documentation.pdf
 ```
 
 And it will generate the documentation in the file `/Users/myusername/myEnabler/documentation.pdf`
@@ -51,7 +45,7 @@ docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware-ulpgc/markdown.
 ```
 ### Using a custom configuration file
 
-If you **don't use** a readthedocs or mkdocs configuration file, you should provide a configuration file specifying the files order and the cover metadata.
+If you **don't use** a readthedocs or MkDocs configuration file, you should provide a configuration file specifying the files order and the cover metadata.
 
 For example, if you have a directory like:
 
@@ -83,7 +77,7 @@ cover_metadata:
 **Note:** Path to the documentation file should be relative.
 
 
-You can run the command with docker using:
+You can run the command with Docker using:
 
 ```
 docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
@@ -172,7 +166,7 @@ where *input_configuration_file* could be a **readthedocs/mkdocs** configuration
 
 
 
-If you don't use a **readthedocs/mkdocs** configuration file, you should provided a YAML configuration file containing:
+If you don't use a **readthedocs/MkDocs** configuration file, you should provided a YAML configuration file containing:
 * A list of paths to the Markdown files that we want to include in the PDF. The paths must be relative to the configuration file itself.
 * Data related to cover.
 
@@ -191,7 +185,7 @@ cover_metadata:
 ```
 
 
-**cover metadata notes: **
+**cover metadata notes:**
 * The cover metadata section accepts any key-value pair. The title is the only that it's treated specially, the rest simply are placed using a new line per pair with the key in bold.
 * The cover metadata could be specified using a different configuration file if **-c** option is passed ```md2pdf -i conf-file.yml -c cover_metatada.yml -o output.pdf```.
 
