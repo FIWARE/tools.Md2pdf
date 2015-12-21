@@ -162,7 +162,7 @@ Run the following commands for cloning this repo and installing the Python packa
 md2pdf -i <input_configuration_file> -o <ouput_pdf_file>
 ```
 
-where *\<input_configuration_file\>* could be a **readthedocs/mkdocs** configuration file.
+where *\<input_configuration_file\>* could be a **readthedocs/MkDocs** configuration file.
 
 
 
