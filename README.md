@@ -41,7 +41,7 @@ And it will generate the documentation in the file `/Users/myusername/myEnabler/
 #### Executable example
 If you copy the directory `markdown-examples/` to `/Users/myusername/markdown-examples` and run:
 ```
-docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware-ulpgc/markdown.to-pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
 ```
 ### Using a custom configuration file
 
@@ -159,10 +159,10 @@ Run the following commands for cloning this repo and installing the Python packa
 **md2pdf** is executed as follows
 
 ```
-md2pdf -i *input_configuration_file* -o *ouput_pdf_file*
+md2pdf -i <input_configuration_file> -o <ouput_pdf_file>
 ```
 
-where *input_configuration_file* could be a **readthedocs/mkdocs** configuration file.
+where *<input_configuration_file>* could be a **readthedocs/mkdocs** configuration file.
 
 
 
