@@ -17,7 +17,7 @@ This section assumes that you already have installed Docker in your machine. If 
 
 If you have a *readthedocs* or *MkDocs* configuration file, you can use it directly with md2pdf.
 
-for example, if you have your documentation under the folder `/Users/myusername/myEnabler` with an structure like:
+For example, if you have your documentation under the folder `/Users/myusername/myEnabler` with an structure like:
 
 ```
 docs/
@@ -185,7 +185,7 @@ cover_metadata:
 ```
 
 
-**cover metadata notes:**
+**Cover metadata notes:**
 * The cover metadata section accepts any key-value pair. The title is the only that it's treated specially, the rest simply are placed using a new line per pair with the key in bold.
 * The cover metadata could be specified using a different configuration file if **-c** option is passed ```md2pdf -i conf-file.yml -c cover_metatada.yml -o output.pdf```.
 
