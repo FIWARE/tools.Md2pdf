@@ -13,9 +13,9 @@ A list of considerations that must be followed for writing the markdown files is
 
 This section assumes that you already have installed Docker in your machine. If you don't, you can install it following the instruccions for your operating system in <https://docs.docker.com/engine/installation/>
 
-### Using a readthedocs or MkDocs configuration file
+### Using a Read the Docs or MkDocs configuration file
 
-If you have a *readthedocs* or *MkDocs* configuration file, you can use it directly with md2pdf.
+If you have a *Read the Docs* or *MkDocs* configuration file, you can use it directly with md2pdf.
 
 For example, if you have your documentation under the folder `/Users/myusername/myEnabler` with an structure like:
 
@@ -45,7 +45,7 @@ docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware-ulpgc/markdown-
 ```
 ### Using a custom configuration file
 
-If you **don't use** a readthedocs or MkDocs configuration file, you should provide a configuration file specifying the files order and the cover metadata.
+If you **don't use** a Read the Docs or MkDocs configuration file, you should provide a configuration file specifying the files order and the cover metadata.
 
 For example, if you have a directory like:
 
@@ -162,11 +162,11 @@ Run the following commands for cloning this repo and installing the Python packa
 md2pdf -i <input_configuration_file> -o <ouput_pdf_file>
 ```
 
-where *\<input_configuration_file\>* could be a **readthedocs/MkDocs** configuration file.
+where *\<input_configuration_file\>* could be a **Read the Docs or MkDocs** configuration file.
 
 
 
-If you don't use a **readthedocs/MkDocs** configuration file, you should provided a YAML configuration file containing:
+If you don't use a **Read the Docs or MkDocs** configuration file, you should provided a YAML configuration file containing:
 * A list of paths to the Markdown files that we want to include in the PDF. The paths must be relative to the configuration file itself.
 * Data related to cover.
 
