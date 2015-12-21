@@ -22,8 +22,8 @@ files_order:
 - 'walkthrough_apiv1.md'
 - 'v1_v2_coexistence.md'
 cover_metadata:
-    title: 'Titulo de prueba'
-    aditional metadata 1: 'metadato_adicional'
+    title: 'Sample title'
+    aditional metadata 1: 'additional metadata'
     Project acronym: 'FI-Core'
     Project full title: 'Future Internet Core'
     Contract No.: '632893'

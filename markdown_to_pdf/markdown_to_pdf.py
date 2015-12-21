@@ -62,7 +62,7 @@ def convert_md_filepaths_from_RTD_format(configuration_filepath):
 
     for page in configuration_file_content['pages']:
         if isinstance(page, basestring):
-            file_paths.append(prefix + page)
+            file_paths.append(page)
         elif isinstance(page, dict):
             for element in page:
                 file_paths += create_file_order_list(page[element])

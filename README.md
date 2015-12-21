@@ -5,11 +5,106 @@
 **md2pdf** is a Python package which allows you to generate a PDF document from a set of Markdown files.
 
 
-## Installing dependencies
+## Markdown guidelines
+
+A list of considerations that must be followed for writing the markdown files is described in the [GUIDELINES](GUIDELINES.md) file.
+
+## Quick Start Guide (With Docker)
+
+This section assumes that you already have installed dokcer in your machine. If you don't, you can install it following the instruccions for your operating system in <https://docs.docker.com/engine/installation/>
+
+With docker installed in your local machine, you can execute md2pdf like:
+
+```
+docker run -v=<path_to_documentation_folder>:<docker_path> fiware-ulpgc/markdown-to-pdf -i <configuration_file> -o <output_file>
+```
+
+### Using a readthedocs or mkdocs configuration file
+
+If you have a readthedocs or mkdocs configuration file, you can use it directly with md2pdf.
+
+for example, if you have your documentation under the folder `/Users/myusername/myEnabler` with an structure like:
+
+```
+docs/
+  Introduction.md
+  User-Guide.md
+  ....
+  images/
+src/
+mkdocs.yml
+...
+```
+
+You can run the command 
+
+```
+docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown.to-pdf -i /md2pdf/mkdocs.yml -o /md2pdf/documentation.pdf
+```
+
+And it will generate the documentation in the file `/Users/myusername/myEnabler/documentation.pdf`
+
+#### Executable example
+If you copy the directory `markdown-examples/` to `/Users/myusername/markdown-examples` and run:
+```
+docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware-ulpgc/markdown.to-pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
+```
+### Using a custom configuration file
+
+If you **don't use** a readthedocs or mkdocs configuration file, you should provide a configuration file specifying the files order and the cover metadata.
+
+For example, if you have a directory like:
+
+```
+docs/
+  Introduction.md
+  User-Guide.md
+  ....
+  images/
+src/
+md2pdf.yml
+...
+```
+
+Where `md2pdf.yml` is like:
+
+```
+files_order:
+    - 'docs/Introduction.md'
+    - 'docs/User-guide.md'
+    ...
+cover_metadata:
+    title: 'Document title'
+    Author: 'foo barr'
+    Another Data: 'data value'
+    
+```
+
+**Note:** Path to the documentation file should be relative.
+
+
+You can run the command with docker using:
+
+```
+docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
+```
+
+#### Executable example
+
+If you copy the directory `markdown-examples/usercover/` to `/Users/myusername/usercover` and run:
+
+```
+docker run -v=/Users/myusername/usercover:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
+```
+
+The file documentation.pdf should have been generated in /Users/myusername/usercover
+
+## Detailed instructions 
+### Installing dependencies (without Docker)
 
 **Important: When following next instructions, make sure that Pandoc v1.15.1 is installed.** Using a greater version may introduce incompatibilities with md2pdf (ie. an anomalous behaviour have been detected in Pandoc v1.15.2 when converting tables).
 
-### Ubuntu
+#### Ubuntu
 
 1. Install [Python 2.7](https://www.python.org/) from repository.
 
@@ -27,7 +122,7 @@
 
 5. Download and install [PDFtk](https://www.pdflabs.com/tools/pdftk-server/)
 
-### Windows
+#### Windows
 
 1. Install [Python2](https://www.python.org/). Make sure PIP is also installed by marking it in the installation wizard.
 
@@ -47,7 +142,7 @@
 4. Install [PDFtk](https://www.pdflabs.com/tools/pdftk-server/) - Tested version: [pdftk_free-2.02-win](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/pdftk_free-2.02-win-setup.exe)
 
 
-### OSX
+#### OSX
 
 1. Download and install MacTeX <https://tug.org/mactex/mactex-download.html>
 
@@ -57,7 +152,7 @@
 
 4. Install pip <https://pip.pypa.io/en/latest/installing/#install-or-upgrade-pip>
 
-## Installing md2pdf
+### Installing md2pdf
 
 Run the following commands for cloning this repo and installing the Python package for md2pdf.
 
@@ -65,7 +160,7 @@ Run the following commands for cloning this repo and installing the Python packa
         cd markdown_to_pdf
         sudo python setup.py install
 
-## Usage
+### Usage
 
 **md2pdf** is executed as follows
 
@@ -73,7 +168,11 @@ Run the following commands for cloning this repo and installing the Python packa
 md2pdf -i *input_configuration_file* -o *ouput_pdf_file*
 ```
 
-where *input_configuration_file* is a YAML configuration file containing:
+where *input_configuration_file* could be a **readthedocs/mkdocs** configuration file.
+
+
+
+If you don't use a **readthedocs/mkdocs** configuration file, you should provided a YAML configuration file containing:
 * A list of paths to the Markdown files that we want to include in the PDF. The paths must be relative to the configuration file itself.
 * Data related to cover.
 
@@ -91,8 +190,10 @@ cover_metadata:
     Another Data: 'data value'
 ```
 
-Note that the cover metadata section accepts any key-value pair. The title is the only that it's treated specially, the rest simply are placed using a new line per pair with the key in bold.
 
+**cover metadata notes: **
+* The cover metadata section accepts any key-value pair. The title is the only that it's treated specially, the rest simply are placed using a new line per pair with the key in bold.
+* The cover metadata could be specified using a different configuration file if **-c** option is passed ```md2pdf -i conf-file.yml -c cover_metatada.yml -o output.pdf```.
 
 For generating a PDF from the documentation example, execute:
 
@@ -106,14 +207,10 @@ For runing unit tests ([unittest](https://docs.python.org/2/library/unittest.htm
 python2 markdown_to_pdf/test_markdown_to_pdf.py
 ```
 
-### Special usage
-
-* It also possible to use a readthedocs configuration instead of the previously described configuration file. 
-* Cover metadata could be specified using a different configuration if **-c** option is passed.
 
 
+### Usage with Docker
 
-## Usage with Docker
 
 The tool is published in the Docker Hub repository as fiwareulpgc/markdown-to-pdf. You can also build it from the dockerfile provided inside the docker folder. 
 
@@ -170,7 +267,3 @@ docker run --volume=/User/username/ExampleEnabler/:/m2pdf fiwareulpgc/markdown-t
 
 **IMPORTANT NOTE:** All documentation must be located under the <host_machine_path> and all references between its elements (a link to another document, an image..) should be relative.
 
-
-## Markdown guidelines
-
-A list of considerations that must be followed for writing the markdown files is described in the [GUIDELINES](GUIDELINES.md) file.

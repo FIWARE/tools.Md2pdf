@@ -1,0 +1,31 @@
+site_name: Sample title
+site_description: Site prueba
+docs_dir: user-cover/
+site_dir: html
+markdown_extensions: [toc,fenced_code]
+use_directory_urls: false
+theme: readthedocs
+extra_css: ["http://fiware.org/style/monokai_sublime.css"]
+pages:
+  - Home: 'index.md'
+  - Reame: 'README.md'
+  - Pagination: 'pagination.md'
+  - Geolocation: 'geolocation.md'
+  - Structured attribute valued: 'structured_attribute_valued.md'
+  - Context provider: 'context_providers.md'
+  - Medatada: 'metadata.md'
+  - Filtering: 'filtering.md'
+  - Multitenacy: 'multitenancy.md'
+  - Service path: 'service_path.md'
+  - Append and delete: 'append_and_delete.md'
+  - Updating register and subscriptions: 'updating_regs_and_subs.md'
+  - Federation: 'federation.md'
+  - Duration: 'duration.md'
+  - Empty types: 'empty_types.md'
+  - STD_CONV_MIX: 'std_conv_mix.md'
+  - http and ngsi: 'http_and_ngsi_sc.md'
+  - Security: 'security.md'
+  - Know limitations: 'known_limitations.md'
+  - Forbidden characters: 'forbidden_characters.md'
+  - walthrough API v1: 'walkthrough_apiv1.md'
+  - V1 v2 coexistence: 'v1_v2_coexistence.md'
