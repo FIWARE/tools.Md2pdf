@@ -258,6 +258,6 @@ If we are using the Docker Hub Container the command should be:
 docker run --volume=/User/username/ExampleEnabler/:/m2pdf fiwareulpgc/markdown-to-pdf -o /m2pdf/documentation.pdf -i /m2pdf/docs/m2pdf.yml
 ```
 
-
+ 
 **IMPORTANT NOTE:** All documentation must be located under the <host_machine_path> and all references between its elements (a link to another document, an image..) should be relative.
 
