@@ -9,7 +9,7 @@
 
 A list of considerations that must be followed for writing the markdown files is described in the [GUIDELINES](GUIDELINES.md) file.
 
-## Quick Start Guide (With Docker)
+## Quick Start Guide (with Docker)
 
 This section assumes that you already have installed Docker in your machine. If you don't, you can install it following the instruccions for your operating system in <https://docs.docker.com/engine/installation/>
 
