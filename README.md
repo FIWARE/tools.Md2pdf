@@ -33,7 +33,7 @@ mkdocs.yml
 You can run the command 
 
 ```
-docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/mkdocs.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/myEnabler:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/mkdocs.yml -o /md2pdf/documentation.pdf
 ```
 
 And it will generate the documentation in the file `/Users/myusername/myEnabler/documentation.pdf`
@@ -41,7 +41,7 @@ And it will generate the documentation in the file `/Users/myusername/myEnabler/
 #### Executable example
 If you copy the directory `markdown-examples/` to `/Users/myusername/markdown-examples` and run:
 ```
-docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/markdown-examples:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
 ```
 ### Using a custom configuration file
 
@@ -80,7 +80,7 @@ cover_metadata:
 You can run the command with Docker using:
 
 ```
-docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/myEnabler:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
 ```
 
 #### Executable example
@@ -88,7 +88,7 @@ docker run -v=/Users/myusername/myEnabler:/md2pdf fiware-ulpgc/markdown-to-pdf -
 If you copy the directory `markdown-examples/usercover/` to `/Users/myusername/usercover` and run:
 
 ```
-docker run -v=/Users/myusername/usercover:/md2pdf fiware-ulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/usercover:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
 ```
 
 The file documentation.pdf should have been generated in /Users/myusername/usercover
