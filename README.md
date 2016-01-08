@@ -140,9 +140,9 @@ The file documentation.pdf should have been generated in /Users/myusername/userc
 
 1. Download and install MacTeX <https://tug.org/mactex/mactex-download.html>
 
-2. Download and install Pandoc 1.15.1 version from <https://github.com/jgm/pandoc/releases/>. You need to download the ```.pkg``` binary.
+2. Download and install Pandoc 1.15.1 version from <https://github.com/jgm/pandoc/releases/tag/1.15.1>. You need to download the ```.pkg``` binary.
 
-3. Download and install PDFtk-server for Mac OSX from <https://www.pdflabs.com/tools/pdftk-server/>
+3. Download and install PDFtk-server for Mac OSX from <https://www.pdflabs.com/tools/pdftk-server/> <br>**IMPORTANT!:** If you are using an *OS 10.11.X El Capitan*, you should install this package <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/pdftk_server-2.02-mac_osx-10.11-setup.pkg> instead.
 
 4. Install pip <https://pip.pypa.io/en/latest/installing/#install-or-upgrade-pip>
 
