@@ -14,7 +14,7 @@ def get_packages(package):
 
 
 setup(name='markdown_to_pdf',
-      version='0.1',
+      version='0.2.1',
       description='Python module for generating a PDF document from a set of Markdown files',
       url='https://github.com/FiwareULPGC/fiware-markdown-to-pdf',
       author='FIWARE ULPGC',
@@ -26,7 +26,7 @@ setup(name='markdown_to_pdf',
         'pyyaml>=3.11',
         'markdown>=2.6.2',
         'pypandoc>=0.9.9',
-        'pandocfilters>=1.2.4'
+        'pandocfilters<=1.2.4'
       ],
       entry_points={
         'console_scripts': [
