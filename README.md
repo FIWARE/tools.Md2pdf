@@ -2,7 +2,7 @@
 
 ## About
 
-**md2pdf** is a Python package which allows you to generate a PDF document from a set of Markdown files.
+**md2pdf** is a Python package which allows you to generate a PDF document from a set of Markdown files. If you have any kind of issue feel free to contact us in <https://github.com/Fiware/tools.Md2pdf/issues>
 
 
 ## Markdown guidelines
