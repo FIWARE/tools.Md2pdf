@@ -8,7 +8,7 @@ import pprint
 
 
 def pandoc_filter(key, value, format, meta):
-    """Filter applied by Pandoc when converting from Mardown to PDF"""
+    """Filter applied by Pandoc when converting from Mardown to PDF. Fix endlines"""
     if key == 'Para':
         new_value=[]
         new_elements=[]

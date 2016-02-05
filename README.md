@@ -33,7 +33,7 @@ mkdocs.yml
 You can run the command 
 
 ```
-docker run -v=/Users/myusername/myEnabler:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/mkdocs.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/myEnabler:/md2pdf fiware/md2pdf -i /md2pdf/mkdocs.yml -o /md2pdf/documentation.pdf
 ```
 
 And it will generate the documentation in the file `/Users/myusername/myEnabler/documentation.pdf`
@@ -41,7 +41,7 @@ And it will generate the documentation in the file `/Users/myusername/myEnabler/
 #### Executable example
 If you copy the directory `markdown-examples/` to `/Users/myusername/markdown-examples` and run:
 ```
-docker run -v=/Users/myusername/markdown-examples:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware/md2pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
 ```
 ### Using a custom configuration file
 
@@ -80,7 +80,7 @@ cover_metadata:
 You can run the command with Docker using:
 
 ```
-docker run -v=/Users/myusername/myEnabler:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/myEnabler:/md2pdf fiware/md2pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
 ```
 
 #### Executable example
@@ -88,7 +88,7 @@ docker run -v=/Users/myusername/myEnabler:/md2pdf fiwareulpgc/markdown-to-pdf -i
 If you copy the directory `markdown-examples/usercover/` to `/Users/myusername/usercover` and run:
 
 ```
-docker run -v=/Users/myusername/usercover:/md2pdf fiwareulpgc/markdown-to-pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/usercover:/md2pdf fiware/md2pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
 ```
 
 The file documentation.pdf should have been generated in /Users/myusername/usercover
@@ -150,7 +150,7 @@ The file documentation.pdf should have been generated in /Users/myusername/userc
 
 Run the following commands for cloning this repo and installing the Python package for md2pdf.
 
-        git clone git@github.com:FiwareULPGC/markdown_to_pdf.git
+        git clone git@github.com:Fiware/tools.Md2pdf.git
         cd markdown_to_pdf
         sudo python setup.py install
 
@@ -206,7 +206,7 @@ python2 markdown_to_pdf/test_markdown_to_pdf.py
 ### Usage with Docker
 
 
-The tool is published in the Docker Hub repository as fiwareulpgc/markdown-to-pdf. You can also build it from the dockerfile provided inside the docker folder. 
+The tool is published in the Docker Hub repository as fiware/md2pdf. You can also build it from the dockerfile provided inside the docker folder. 
 
  To build the Docker image with the Dockerfile simply use the command `docker build -t <image_name> .` inside the docker folder. Don't forget the final dot.
 
@@ -216,10 +216,10 @@ Once the image is created, you can execute it with:
 docker run --volume=<host_machine_path>:<docker_container_path> <image_name> -o <docker_container_output_path> -i <docker_container_conf_path>
 ```
 
-If you are using the Docker Hub container simply replace **<image_name>** by **fiwareulpgc/markdown-to-pdf**:
+If you are using the Docker Hub container simply replace **<image_name>** by **fiware/md2pdf**:
 
 ```
-docker run --volume=<host_machine_path>:<docker_container_path> fiwareulpgc/markdown-to-pdf -o <docker_container_output_path> -i <docker_container_conf_path>
+docker run --volume=<host_machine_path>:<docker_container_path> fiware/md2pdf -o <docker_container_output_path> -i <docker_container_conf_path>
 ```
 
 Where:
@@ -255,7 +255,7 @@ docker run --volume=/User/username/ExampleEnabler/:/m2pdf m2pdf-docker -o /m2pdf
 If we are using the Docker Hub Container the command should be:
 
 ```
-docker run --volume=/User/username/ExampleEnabler/:/m2pdf fiwareulpgc/markdown-to-pdf -o /m2pdf/documentation.pdf -i /m2pdf/docs/m2pdf.yml
+docker run --volume=/User/username/ExampleEnabler/:/m2pdf fiware/md2pdf -o /m2pdf/documentation.pdf -i /m2pdf/docs/m2pdf.yml
 ```
 
  

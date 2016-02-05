@@ -32,7 +32,6 @@ def translate_md_tables(markdown_content):
                 table_lines.append(line)
                 continue
 
-        #TODO translate table
         if table:
             readed_lines += generate_md_table(candidate_header, separator, table_lines)
         elif candidate_header is not None:
@@ -56,11 +55,9 @@ def split_row_columns(row,n_header_columns=0):
     columns = []
     if platform == "win32":
         # If we don't strip columns in Windows tables aren't rendered in PDF.
-        # TODO: Don't split \|
         unstripped_columns = row.strip().strip('|').split('|')
         columns = [column.strip() for column in unstripped_columns]
     else:
-        # TODO: Don't split \|
         columns = row.strip('|').split('|')
     
     # If a row has less lines than the table header, fill it with empty cells
@@ -74,7 +71,7 @@ def split_row_columns(row,n_header_columns=0):
 
 def generate_md_table(header, header_separator, rows):
 
-    # TODO improve how the columns are counted
+    
     n_cols = count_row_columns(header)
     table=[]
     if count_row_columns(header_separator) != n_cols:
@@ -115,7 +112,6 @@ def fix_col_length(table, col_lengths):
         new_row = []
         for col, element in enumerate(row):
             element = element + " " *(col_lengths[col]- len(element))
-            #element = element + " " * int(math.ceil((col_lengths[col]+(sum(col_lengths) - col_lengths[col] )*0)- len(element)) )
             new_row.append(element)
 
         new_table.append(new_row)
@@ -237,7 +233,6 @@ def process_breakable_with_html(element):
             add_breakable_char(result.group('last'))
             )
 
-    #pattern = '(?P<prev>.*?)(?P<url>https?://[^ ]*)(?P<last>.*)'
     pattern = '(?P<prev>.*[^\[].*[^\]][^\(])?(?P<url>https?://[^ ]*)(?P<last>.*)'
     result = re.search(pattern,element, flags=re.IGNORECASE)
 

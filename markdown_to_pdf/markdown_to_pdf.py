@@ -470,10 +470,6 @@ def main():
             if exception.errno != errno.EEXIST:
                 raise
     
-    """
-    if not os.path.exists(os.path.dirname(output_pdf_file)):
-        os.makedirs(os.path.dirname(output_pdf_file))
-    """
 
     try:
         markdown_filepaths = get_markdown_filepaths(input_conf_file)

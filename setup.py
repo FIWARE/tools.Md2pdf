@@ -14,12 +14,12 @@ def get_packages(package):
 
 
 setup(name='markdown_to_pdf',
-      version='0.2.1',
+      version='0.2.2',
       description='Python module for generating a PDF document from a set of Markdown files',
-      url='https://github.com/FiwareULPGC/fiware-markdown-to-pdf',
+      url='https://github.com/Fiware/tools.Md2pdf',
       author='FIWARE ULPGC',
       author_email='fiware@ulpgc.es',
-      license='',
+      license='MIT',
       packages=setuptools.find_packages(),
       include_package_data=True,
       install_requires=[
@@ -37,7 +37,7 @@ setup(name='markdown_to_pdf',
         ],
       },
       classifiers=[ 
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',

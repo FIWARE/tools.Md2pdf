@@ -1,5 +1,15 @@
 # FIWARE MArkdown to PDF release notes
 
+## 0.2.2
+### Release date 5/02/2016 
+
+### New features
+* Repository transfered to FIWARE organization.
+* Added LICENSE file.
+* Added CONTRIBUTORS file.
+
+
+
 ## 0.2.1
 ### Release date 15/01/2016 
 
