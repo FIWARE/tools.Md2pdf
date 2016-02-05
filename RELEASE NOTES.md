@@ -1,4 +1,4 @@
-# FIWARE MArkdown to PDF release notes
+# FIWARE Markdown to PDF release notes
 
 ## 0.2.2
 ### Release date 5/02/2016 
