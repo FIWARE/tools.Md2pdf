@@ -29,7 +29,7 @@ branches:
   only:
     - master
     - develop
-    - /^travis-.*$/
+    - /^travis.*$/
     - /^release.*$/
 
 notifications:
