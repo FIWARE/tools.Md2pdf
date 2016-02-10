@@ -162,8 +162,8 @@ def exists_url(url):
 
 
 def remove_ids_from_a(content):
-    pattern = r'\<a[^\>]*(?P<id>id *= *((\'.*\')|(".*"))).*\>'
-    return re.sub(pattern,'',content,flags=re.IGNORECASE)
+    pattern = r'(\<a[^\>]*)(?P<id>id *= *((\'.*\')|(".*")))(.*\>)'
+    return re.sub(pattern,'\\1\\6',content,flags=re.IGNORECASE)
 
 def is_a_markdown_header(line, next_line):
     """Return the nesting level of the Markdown header in markdown_line (if any)"""

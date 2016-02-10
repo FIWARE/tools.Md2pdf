@@ -209,6 +209,97 @@ class TestMarkdownToPdf( unittest.TestCase ):
         # File with extension other than pdf. Add .pdf extension.
         self.assertEqual(normalize_file_extension('dir/file.txt'), 'dir/file.txt.pdf')
 
+    def test_fix_special_characters_inside_links(self):
+        self.assertEqual(fix_special_characters_inside_links('http://www.test.com/a\<aa'),'http://www.test.com/a\<aa')
+        self.assertEqual(fix_special_characters_inside_links('http://www.test.com/a\\<aa'),'http://www.test.com/a\\<aa')
+        self.assertEqual(fix_special_characters_inside_links('http://www.test.com/a<aa'),'http://www.test.com/a\<aa')
+        self.assertEqual(fix_special_characters_inside_links('http://www.test.com/a\>aa'),'http://www.test.com/a\>aa')
+        self.assertEqual(fix_special_characters_inside_links('http://www.test.com/a\\>aa'),'http://www.test.com/a\\>aa')
+        self.assertEqual(fix_special_characters_inside_links('http://www.test.com/a>aa'),'http://www.test.com/a\>aa')
+        self.assertEqual(fix_special_characters_inside_links('http://www.test.com/aaa'),'http://www.test.com/aaa')
+
+        
+
+    def test_fix_blanck_spaces_before_code_tag(self):
+        self.assertEqual(fix_blanck_spaces_before_code_tag('\n```code'),'\n```code')
+        self.assertEqual(fix_blanck_spaces_before_code_tag('\n ```code'),'\n```code')
+        self.assertEqual(fix_blanck_spaces_before_code_tag('\n  ```code'),'\n```code')
+        self.assertEqual(fix_blanck_spaces_before_code_tag('\n   ```code'),'\n```code')
+        self.assertEqual(fix_blanck_spaces_before_code_tag('\n    ```code'),'\n    ```code')
+
+
+    def test_fix_html_before_title(self):
+        self.assertEqual(fix_html_before_title('>\n#title'),'>\n\n#title')
+        self.assertEqual(fix_html_before_title('>\n\n#title'),'>\n\n#title')
+        self.assertEqual(fix_html_before_title('>\n\n\n#title'),'>\n\n\n#title')
+        self.assertEqual(fix_html_before_title('>#title'),'>#title')
+
+
+    def test_fix_new_line_after_img(self):
+        self.assertEqual(fix_new_line_after_img('![alt text](img/url.jpg)'),'![alt text](img/url.jpg)')
+        self.assertEqual(fix_new_line_after_img('![alt text](img/url.jpg)\n'),'![alt text](img/url.jpg)\n\n')
+        self.assertEqual(fix_new_line_after_img('![alt text](img/url.jpg)\n\n'),'![alt text](img/url.jpg)\n\n')
+        self.assertEqual(fix_new_line_after_img('![alt text](img/url.jpg)\n\n\n'),'![alt text](img/url.jpg)\n\n\n')
+        self.assertEqual(fix_new_line_after_img('![alt text](img/url.jpg)\n\n\n\n'),'![alt text](img/url.jpg)\n\n\n\n')
+
+
+    def test_separate_latex_anchors(self):
+        self.assertEqual(separate_latex_anchors('\\anchor{aaaa}\n\\anchor'),'\\anchor{aaaa}\n\n\\anchor')
+        self.assertEqual(separate_latex_anchors('\\anchor{aaaa}\n\n\\anchor'),'\\anchor{aaaa}\n\n\\anchor')
+        self.assertEqual(separate_latex_anchors('\\anchor{aaaa}\n\n\n\\anchor'),'\\anchor{aaaa}\n\n\n\\anchor')
+        self.assertEqual(separate_latex_anchors('\\anchor{aaaa}\\anchor'),'\\anchor{aaaa}\\anchor')
+
+
+    def test_add_newlines_before_markdown_headers(self):
+        self.assertEqual(add_newlines_before_markdown_headers('text\n```code\n#title asdfs \n asdfasdf\n```'),'text\n```code\n#title asdfs \n asdfasdf\n```')
+
+        self.assertEqual(add_newlines_before_markdown_headers('text\n```code\n```\n#title asdfs \n asdfasdf'),'text\n```code\n```\n\n\n#title asdfs \n asdfasdf')
+
+        self.assertEqual(add_newlines_before_markdown_headers('text\n  ```code\n#title asdfs \n asdfasdf\n```'),'text\n  ```code\n#title asdfs \n asdfasdf\n```')
+
+        self.assertEqual(add_newlines_before_markdown_headers('text\n  ```code\n```\n#title asdfs \n asdfasdf'),'text\n  ```code\n```\n\n\n#title asdfs \n asdfasdf')
+
+        self.assertEqual(add_newlines_before_markdown_headers('text\n#title asdfs \n asdfasdf'),'text\n\n\n#title asdfs \n asdfasdf')
+
+
+    def test_remove_ids_from_a(self):
+        self.assertEqual(remove_ids_from_a('<a href=#link id="identifier">text</a>'),'<a href=#link >text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a href=#link id= "identifier">text</a>'),'<a href=#link >text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a href=#link id = "identifier">text</a>'),'<a href=#link >text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a href=#link id= "identifier">text</a>'),'<a href=#link >text</a>')
+
+
+        self.assertEqual(remove_ids_from_a('<a id="identifier" href=#link>text</a>'),'<a  href=#link>text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a id= "identifier" href=#link>text</a>'),'<a  href=#link>text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a id = "identifier" href=#link>text</a>'),'<a  href=#link>text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a id= "identifier" href=#link>text</a>'),'<a  href=#link>text</a>')
+
+        
+
+        self.assertEqual(remove_ids_from_a('<a href=#link id=\'identifier\'>text</a>'),'<a href=#link >text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a href=#link id= \'identifier\'>text</a>'),'<a href=#link >text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a href=#link id = \'identifier\'>text</a>'),'<a href=#link >text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a href=#link id= \'identifier\'>text</a>'),'<a href=#link >text</a>')
+
+
+        self.assertEqual(remove_ids_from_a('<a id=\'identifier\' href=#link>text</a>'),'<a  href=#link>text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a id= \'identifier\' href=#link>text</a>'),'<a  href=#link>text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a id = \'identifier\' href=#link>text</a>'),'<a  href=#link>text</a>')
+
+        self.assertEqual(remove_ids_from_a('<a id= \'identifier\' href=#link>text</a>'),'<a  href=#link>text</a>')
+
+
 
 if __name__ == "__main__":
     unittest.main()
