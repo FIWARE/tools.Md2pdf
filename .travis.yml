@@ -18,10 +18,10 @@ install:
     - sudo apt-get install pdftk -y
     - wget https://github.com/jgm/pandoc/releases/download/1.15.1/pandoc-1.15.1-1-amd64.deb 
     - sudo dpkg -i pandoc-1.15.1-1-amd64.deb
-    - pip install -Iv pyyaml>=3.11
-    - pip install -Iv markdown>=2.6.2
-    - pip install -Iv pypandoc>=0.9.9
-    - pip install -Iv pandocfilters<=1.2.4
+    - pip install -Iv 'pyyaml>=3.11'
+    - pip install -Iv 'markdown>=2.6.2'
+    - pip install -Iv 'pypandoc>=0.9.9'
+    - pip install -Iv 'pandocfilters<=1.2.4'
     - sudo python setup.py install 
 
 script:
