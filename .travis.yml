@@ -20,7 +20,6 @@ install:
     - sudo dpkg -i pandoc-1.15.1-1-amd64.deb
     - sudo python setup.py install 
 
-
 script:
     - nosetests -v
     - cd markdown-examples
