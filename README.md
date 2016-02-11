@@ -1,6 +1,7 @@
 # md2pdf
 
-![Build status](https://travis-ci.org/Fiware/tools.Md2pdf.svg?branch=master)
+[![Build Status][travis-image]][travis-url]
+[![License][license-image]][license-url]
 
 ## About
 
@@ -263,3 +264,9 @@ docker run --volume=/User/username/ExampleEnabler/:/m2pdf fiware/md2pdf -o /m2pd
  
 **IMPORTANT NOTE:** All documentation must be located under the <host_machine_path> and all references between its elements (a link to another document, an image..) should be relative.
 
+
+[travis-image]: https://travis-ci.org/Fiware/tools.Md2pdf.svg?branch=master
+[travis-url]: https://travis-ci.org/Fiware/tools.Md2pdf
+
+[license-image]: https://img.shields.io/github/license/mashape/apistatus.svg
+[license-url]: https://github.com/Fiware/tools.Md2pdf/blob/master/LICENSE
