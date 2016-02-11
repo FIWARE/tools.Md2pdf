@@ -1,5 +1,7 @@
 # md2pdf
 
+![Build status](https://travis-ci.org/Fiware/tools.Md2pdf.svg?branch=master)
+
 ## About
 
 **md2pdf** is a Python package which allows you to generate a PDF document from a set of Markdown files. If you have any kind of issue feel free to contact us in <https://github.com/Fiware/tools.Md2pdf/issues>

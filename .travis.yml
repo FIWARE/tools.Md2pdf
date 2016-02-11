@@ -1,0 +1,44 @@
+language: python
+python:
+    - "2.7"
+
+sudo: required
+dist: trusty
+
+before_install:
+  - sudo apt-get update
+  #- sudo apt-get upgrade -y
+
+install:
+
+    - pip install unittest2
+    - pip install setuptools --upgrade
+    - sudo apt-get install texlive-xetex texlive-fonts-recommended texlive-latex-extra texlive -y
+    - sudo apt-get install unzip git python python-pip wget build-essential -y
+    - sudo apt-get install pdftk -y
+    - wget https://github.com/jgm/pandoc/releases/download/1.15.1/pandoc-1.15.1-1-amd64.deb 
+    - sudo dpkg -i pandoc-1.15.1-1-amd64.deb
+    - pip install -Iv 'pyyaml>=3.11'
+    - pip install -Iv 'markdown>=2.6.2'
+    - pip install -Iv 'pypandoc>=0.9.9'
+    - pip install -Iv 'pandocfilters<=1.2.4'
+    - sudo python setup.py install 
+
+script:
+    - nosetests -v
+    - cd markdown-examples
+    - md2pdf -i mkdocs_user-cover.yml
+
+branches:
+  only:
+    - master
+    - develop
+    - /^travis.*$/
+    - /^release.*$/
+
+notifications:
+    email:
+        recipients:
+            - ficore-md2pdf-travis@googlegroups.com
+        on_succes: always
+        on_failure: always
