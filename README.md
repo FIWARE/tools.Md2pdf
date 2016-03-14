@@ -1,11 +1,13 @@
 # md2pdf
 
+[![MIT license][license-image]][license-url]
+[![Docker][docker-image]][docker-url]
+[![Support][support-image]][support-url]
 [![Build Status][travis-image]][travis-url]
-[![License][license-image]][license-url]
 
 ## About
 
-**md2pdf** is a Python package which allows you to generate a PDF document from a set of Markdown files. If you have any kind of issue feel free to contact us in <https://github.com/Fiware/tools.Md2pdf/issues>
+**md2pdf** is a Python package which allows you to generate a PDF document from a set of Markdown files. If you have any kind of issue feel free to contact us at <http://ask.fiware.org> using the tag 'md2pdf'
 
 
 ## Markdown guidelines
@@ -268,5 +270,11 @@ docker run --volume=/User/username/ExampleEnabler/:/m2pdf fiware/md2pdf -o /m2pd
 [travis-image]: https://travis-ci.org/Fiware/tools.Md2pdf.svg?branch=master
 [travis-url]: https://travis-ci.org/Fiware/tools.Md2pdf
 
-[license-image]: https://img.shields.io/github/license/mashape/apistatus.svg
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-url]: https://github.com/Fiware/tools.Md2pdf/blob/master/LICENSE
+
+[docker-image]: https://img.shields.io/docker/pulls/fiware/md2pdf.svg
+[docker-url]: https://hub.docker.com/r/fiware/md2pdf/
+
+[support-image]: https://img.shields.io/badge/support-askbot-yellowgreen.svg
+[support-url]: http://ask.fiware.org
