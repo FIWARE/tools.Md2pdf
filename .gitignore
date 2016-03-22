@@ -1,2 +1,3 @@
 markdown_to_pdf.egg-info/*
 dist/*
+build/*

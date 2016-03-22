@@ -1,4 +1,5 @@
 recursive-include markdown_to_pdf *.tex
+recursive-include markdown_to_pdf *.sty
 recursive-include markdown_to_pdf *.md
 recursive-include markdown_to_pdf *.png
 recursive-include markdown_to_pdf *.yml

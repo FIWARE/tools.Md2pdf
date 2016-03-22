@@ -1,13 +1,13 @@
 # FIWARE Markdown to PDF release notes
 
 ## 0.2.2
-### Release date 5/02/2016 
+### Release date 22/03/2016 
 
 ### New features
 * Repository transfered to FIWARE organization.
 * Added LICENSE file.
 * Added CONTRIBUTORS file.
-
+* PDF is now generated using a Sphinx based theme
 
 
 ## 0.2.1
