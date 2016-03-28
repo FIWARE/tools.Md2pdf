@@ -1,21 +1,30 @@
 % Contents of listings-setup.tex
-\usepackage{xcolor}
-\usepackage{hyperref}
+% Add Sphinx theme generic packages
+\usepackage{cmap}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage[english]{babel}
+\usepackage{times}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{eqparbox}
 \usepackage[htt]{hyphenat}
-\usepackage{xstring}
-\usepackage{forloop}
 \usepackage{seqsplit}
 \usepackage{enumitem}
-%\usepackage{url}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
 
-\usepackage{geometry}
- \geometry{
- a4paper,
- total={170mm,257mm},
- left=20mm,
- top=20mm,
- }
- 
+
+\def\tightlist{}
+
+% Add headers and footers to the template
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[LO,RE]{\leftmark}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+
 % Increase max. nesting level for unordered lists
 \setlistdepth{8}
 \setlist[itemize,1]{label=$\bullet$}
@@ -40,9 +49,6 @@
 \setenumerate[8]{label=\arabic*)}
 \renewlist{enumerate}{enumerate}{8}
 
-%\mathchardef\UrlBreakPenalty=10000
-%\mathchardef\UrlBigBreakPenalty=10000
-
 % Shortcut command for creating anchors.
 \newcommand{\anchor}[1]{
     \mbox{}\phantomsection\label{#1}
@@ -61,7 +67,6 @@
 }%
 \makeatother
 
-
 \let\oldTexttt\texttt
 \renewcommand{\texttt}[1]{\oldTexttt{\seqsplit{#1}}}
 
@@ -73,7 +78,6 @@
   \begingroup\lccode`~=`_\lowercase{\endgroup\def~}{_\discretionary{}{}{}}%
 
   \catcode`/=\active\catcode`.=\active\catcode`_=\active
-  %\catcode`/=\active\catcode`.=\active
   \scantokens{#1\noexpand}%
   \endgroup
 }
