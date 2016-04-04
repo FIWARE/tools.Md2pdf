@@ -26,8 +26,8 @@ install:
 
 script:
     - nosetests -v
-    - cd markdown-examples
-    - md2pdf -i mkdocs_user-cover.yml
+    - cd markdown_examples
+    - md2pdf -i mkdocs_user_cover.yml
 
 branches:
   only:

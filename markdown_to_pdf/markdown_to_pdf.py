@@ -262,8 +262,8 @@ def generate_pdf_from_markdown(pdf_filepath, markdown_filepath,developer_mode):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
     
-    latex_config_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'latex-configuration')
-    latex_code_sections_config_path = os.path.join(latex_config_dir, 'code-sections.tex')
+    latex_config_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'latex_configuration')
+    latex_code_sections_config_path = os.path.join(latex_config_dir, 'code_sections.tex')
 
     pandoc_options = ["--template", os.path.join(latex_config_dir, 'template.tex'), "--latex-engine=xelatex", 
                       "--toc", "--toc-depth=3", "--listings", "-H", latex_code_sections_config_path, 
@@ -272,7 +272,7 @@ def generate_pdf_from_markdown(pdf_filepath, markdown_filepath,developer_mode):
 
     # If developer mode is on, convert temporal file to LaTeX.
     if developer_mode == True:
-        latex_filepath = os.path.join(tempfile.gettempdir(),'markdown-to-pdf-temp.tex')
+        latex_filepath = os.path.join(tempfile.gettempdir(),'markdown_to_pdf_temp.tex')
         print('Generating LaTeX (developer mode) ...')
         call(["pandoc"] + pandoc_options + ["--output", latex_filepath, markdown_filepath])
         print('LaTeX generated: [%s] (developer mode)' % latex_filepath)
@@ -454,10 +454,10 @@ def main():
 
     # Set auxiliar file paths.
     temp_dirpath = tempfile.gettempdir()
-    monolitic_markdown_filepath = os.path.join(temp_dirpath,'markdown-to-pdf-temp.md')
-    temp_cover_md_path = os.path.join(temp_dirpath,'markdown-to-pdf-cover-temp.md')
-    temp_pdf_path = os.path.join(temp_dirpath,'markdown-to-pdf-content-temp.pdf')
-    temp_cover_pdf_path = os.path.join(temp_dirpath,'markdown-to-pdf-cover-temp.pdf')
+    monolitic_markdown_filepath = os.path.join(temp_dirpath,'markdown_to_pdf_temp.md')
+    temp_cover_md_path = os.path.join(temp_dirpath,'markdown_to_pdf_cover_temp.md')
+    temp_pdf_path = os.path.join(temp_dirpath,'markdown_to_pdf_content_temp.pdf')
+    temp_cover_pdf_path = os.path.join(temp_dirpath,'markdown_to_pdf_cover_temp.pdf')
     cover_template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cover_template')
 
     shutil.copy2(os.path.join(cover_template_dir, 'cover_img.png'), os.path.join(temp_dirpath,'cover_img.png'))

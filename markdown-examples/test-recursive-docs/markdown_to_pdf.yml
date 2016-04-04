@@ -1,5 +1,0 @@
-files_order:
-- 'parent.md'
-- 'brother.md'
-- 'child-dir-1/child.md'
-- 'child-dir-2/child.md'

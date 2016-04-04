@@ -1,0 +1,5 @@
+files_order:
+- 'parent.md'
+- 'brother.md'
+- 'child_dir_1/child.md'
+- 'child_dir_2/child.md'
