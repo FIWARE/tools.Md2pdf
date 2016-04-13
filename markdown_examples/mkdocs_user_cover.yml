@@ -1,6 +1,6 @@
 site_name: Sample title
 site_description: Site prueba
-docs_dir: user-cover/
+docs_dir: user_cover/
 site_dir: html
 markdown_extensions: [toc,fenced_code]
 use_directory_urls: false

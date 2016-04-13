@@ -44,9 +44,9 @@ docker run -v=/Users/myusername/myEnabler:/md2pdf fiware/md2pdf -i /md2pdf/mkdoc
 And it will generate the documentation in the file `/Users/myusername/myEnabler/documentation.pdf`
 
 #### Executable example
-If you copy the directory `markdown-examples/` to `/Users/myusername/markdown-examples` and run:
+If you copy the directory `markdown_examples/` to `/Users/myusername/markdown_examples` and run:
 ```
-docker run -v=/Users/myusername/markdown-examples:/md2pdf fiware/md2pdf -i /md2pdf/mkdocs_user-cover.yml -o /md2pdf/documentation.pdf
+docker run -v=/Users/myusername/markdown_examples:/md2pdf fiware/md2pdf -i /md2pdf/mkdocs_user_cover.yml -o /md2pdf/documentation.pdf
 ```
 ### Using a custom configuration file
 
@@ -90,7 +90,7 @@ docker run -v=/Users/myusername/myEnabler:/md2pdf fiware/md2pdf -i /md2pdf/md2pd
 
 #### Executable example
 
-If you copy the directory `markdown-examples/usercover/` to `/Users/myusername/usercover` and run:
+If you copy the directory `markdown_examples/usercover/` to `/Users/myusername/usercover` and run:
 
 ```
 docker run -v=/Users/myusername/usercover:/md2pdf fiware/md2pdf -i /md2pdf/md2pdf.yml -o /md2pdf/documentation.pdf
@@ -192,12 +192,12 @@ cover_metadata:
 
 **Cover metadata notes:**
 * The cover metadata section accepts any key-value pair. The title is the only that it's treated specially, the rest simply are placed using a new line per pair with the key in bold.
-* The cover metadata could be specified using a different configuration file if **-c** option is passed ```md2pdf -i conf-file.yml -c cover_metatada.yml -o output.pdf```.
+* The cover metadata could be specified using a different configuration file if **-c** option is passed ```md2pdf -i conf_file.yml -c cover_metatada.yml -o output.pdf```.
 
 For generating a PDF from the documentation example, execute:
 
 ```
-md2pdf -i markdown-examples/user-cover/markdown-to-pdf.yml -o /var/tmp/orion-user-manual.pdf 
+md2pdf -i markdown_examples/user_cover/markdown_to_pdf.yml -o /var/tmp/orion_user_manual.pdf 
 ```
 
 For runing unit tests ([unittest](https://docs.python.org/2/library/unittest.html) required), execute (**from within the repository root directory**):
