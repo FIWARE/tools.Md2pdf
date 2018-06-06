@@ -156,7 +156,7 @@ The file documentation.pdf should have been generated in /Users/myusername/userc
 Run the following commands for cloning this repo and installing the Python package for md2pdf.
 
         git clone git@github.com:Fiware/tools.Md2pdf.git
-        cd markdown_to_pdf
+        cd tools.Md2pdf/
         sudo python setup.py install
 
 ### Usage
