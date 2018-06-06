@@ -16,7 +16,7 @@ A list of considerations that must be followed for writing the markdown files is
 
 ## Quick Start Guide (with Docker)
 
-This section assumes that you already have installed Docker in your machine. If you don't, you can install it following the instruccions for your operating system in <https://docs.docker.com/engine/installation/>
+This section assumes that you already have installed Docker in your machine. If you don't, you can install it following the instructions for your operating system in <https://docs.docker.com/engine/installation/>
 
 ### Using a Read the Docs or MkDocs configuration file
 
