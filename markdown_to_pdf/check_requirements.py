@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import subprocess
 import sys
 import os
@@ -22,7 +23,7 @@ def is_pandoc_installed():
     try:
         subprocess.check_call(["pandoc","--version"],stdout=FNULL, stderr=subprocess.STDOUT)
     except Exception as e:
-        print "Aborted: pandoc is not correctly installed."
+        print("Aborted: pandoc is not correctly installed.")
         sys.exit(1)
         FNULL.close()
 
@@ -32,7 +33,7 @@ def is_pdftk_installed():
     try:
         subprocess.check_call(["pdftk","--version"],stdout=FNULL, stderr=subprocess.STDOUT)
     except Exception as e:
-        print "Aborted: pdftk is not correctly installed."
+        print("Aborted: pdftk is not correctly installed.")
         sys.exit(1)
         FNULL.close()
 
@@ -44,7 +45,7 @@ def is_xelatex_installed():
     try:
         subprocess.check_call(["xelatex","--version"],stdout=FNULL, stderr=subprocess.STDOUT)
     except Exception as e:
-        print "Aborted: xelatex is not correctly installed."
+        print("Aborted: xelatex is not correctly installed.")
         sys.exit(1)
         FNULL.close()
 
@@ -56,7 +57,7 @@ def is_false_installed():
     try:
         subprocess.check_call(["false_program","--version"],stdout=FNULL, stderr=subprocess.STDOUT)
     except Exception as e:
-        print "Aborted: false_program is not correctly installed"
+        print("Aborted: false_program is not correctly installed")
         sys.exit(1)
         FNULL.close()
 
