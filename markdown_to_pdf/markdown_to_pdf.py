@@ -36,7 +36,7 @@ def get_markdown_filepaths(configuration_filepath):
 
     try:
         configuration_file_content['files_order']
-    except Exception, e:
+    except Exception:
         #try to load from RTD yml format
         configuration_file_content['files_order'] = convert_md_filepaths_from_RTD_format(configuration_filepath)
 
@@ -57,7 +57,7 @@ def convert_md_filepaths_from_RTD_format(configuration_filepath):
 
     try:
         prefix = "./"+configuration_file_content['docs_dir']
-    except Exception, e:
+    except Exception:
         prefix = ""
 
     for page in configuration_file_content['pages']:
@@ -343,7 +343,7 @@ def generate_default_cover_file(input_conf_file, output_file):
         
         configuration['cover_metadata'] = configuration_file_content['cover_metadata']
 
-    except Exception, e:
+    except Exception:
         #load default values
         cover_template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cover_template')
         default_cover_conf_file = os.path.join(cover_template_dir, 'default_cover_metadata.yml')
@@ -353,13 +353,13 @@ def generate_default_cover_file(input_conf_file, output_file):
         try:
             #try to obtain site_name
             default_configuration_file_content['cover_metadata']['title']=configuration_file_content['site_name']
-        except Exception as e:
+        except Exception:
             pass        
         
         try:
             #try to obtain site description
             default_configuration_file_content['cover_metadata']['description']=configuration_file_content['site_description']
-        except Exception as e:
+        except Exception:
             pass
 
         configuration['cover_metadata'] = default_configuration_file_content['cover_metadata']
